@@ -41,18 +41,18 @@ from wbb.modules.greetings import handle_new_member, send_welcome_message
 
 approvaldb = db.autoapprove
 
-__MODULE__ = "Autoapprove"
+__MODULE__ = "پەسەندکردنی خۆکارانە"
 __HELP__ = """
-command: /autoapprove
+فەرمان: /autoapprove
 
-This module helps to automatically accept chat join request send by a user through invitation link of your group
+ئەم مۆدیوڵە یارمەتیدەرە بۆ پەسەندکردنی ئەو داواکارییانەی کە بەکارهێنەران لە ڕێگەی لینکی بانگێشتکردنەوە دەینێرن بۆ جۆین بوون لە گرووپ.
 
-**Modes:**
-¤ Automatic - Automatically accepts chat join request.
+**مۆدەکان (Modes):**
+¤ خۆکارانە (Automatic) - بە شێوەیەکی ئۆتۆماتیکی داواکاری جۆین بوون قبووڵ دەکات.
 
-¤ Manual - A message will be send to the chat by tagging the admins. The admins can accept or decline the requests.
+¤ دەستی (Manual) - نامەیەک دەنێرێتە گرووپەکە و تاگی ئەدمینەکان دەکات. ئەدمینەکان دەتوانن قبووڵی بکەن یان ڕەتی بکەنەوە.
 
-Use: /clear_pending Command to remove all pending user ID from DB. This will allow the user to send request again.
+بەکارهێنان: فەرمانی /clear_pending بەکاربهێنە بۆ سڕینەوەی هەموو ئەو ئایدییانەی کە لە چاوەڕوانیدان. ئەمە ڕێگە دەدات بەکارهێنەر جارێکی تر داواکاری بنێرێتەوە.
 """
 
 
@@ -72,21 +72,24 @@ async def approval_command(client, message):
             )
         if mode == "automatic":
             switch = "manual"
+            mode_kurdish = "خۆکارانە (Auto)"
         else:
             switch = "automatic"
+            mode_kurdish = "دەستی (Manual)"
+            
         buttons = {
-            "Turn OFF": "approval_off",
-            f"{(mode.upper())}": f"approval_{switch}",
+            "کوژاندنەوە (OFF)": "approval_off",
+            f"{mode_kurdish}": f"approval_{switch}",
         }
         keyboard = ikb(buttons, 1)
         await message.reply(
-            "**Autoapproval for this chat: Enabled.**", reply_markup=keyboard
+            "**پەسەندکردنی خۆکارانە بۆ ئەم چاتە: چالاککراوە ✅**", reply_markup=keyboard
         )
     else:
-        buttons = {"Turn ON": "approval_on"}
+        buttons = {"پێکردن (ON)": "approval_on"}
         keyboard = ikb(buttons, 1)
         await message.reply(
-            "**Autoapproval for this chat: Disabled.**", reply_markup=keyboard
+            "**پەسەندکردنی خۆکارانە بۆ ئەم چاتە: ناچالاکە ❌**", reply_markup=keyboard
         )
 
 
@@ -99,7 +102,7 @@ async def approval_cb(client, cb):
     if permission not in permissions:
         if from_user.id not in SUDOERS:
             return await cb.answer(
-                f"You don't have the required permission.\n Permission: {permission}",
+                f"تۆ دەسەڵاتی پێویستت نییە.\n دەسەڵاتی پێویست: {permission}",
                 show_alert=True,
             )
     command_parts = cb.data.split("_", 1)
@@ -107,10 +110,10 @@ async def approval_cb(client, cb):
     if option == "off":
         if await approvaldb.count_documents({"chat_id": chat_id}) > 0:
             approvaldb.delete_one({"chat_id": chat_id})
-            buttons = {"Turn ON": "approval_on"}
+            buttons = {"پێکردن (ON)": "approval_on"}
             keyboard = ikb(buttons, 1)
             return await cb.edit_message_text(
-                "**Autoapproval for this chat: Disabled.**",
+                "**پەسەندکردنی خۆکارانە بۆ ئەم چاتە: ناچالاکە ❌**",
                 reply_markup=keyboard,
             )
     if option == "on":
@@ -128,11 +131,17 @@ async def approval_cb(client, cb):
         upsert=True,
     )
     chat = await approvaldb.find_one({"chat_id": chat_id})
-    mode = chat["mode"].upper()
-    buttons = {"Turn OFF": "approval_off", f"{mode}": f"approval_{switch}"}
+    mode_db = chat["mode"]
+    
+    if mode_db == "automatic":
+        mode_kurdish = "خۆکارانە (Auto)"
+    else:
+        mode_kurdish = "دەستی (Manual)"
+        
+    buttons = {"کوژاندنەوە (OFF)": "approval_off", f"{mode_kurdish}": f"approval_{switch}"}
     keyboard = ikb(buttons, 1)
     await cb.edit_message_text(
-        "**Autoapproval for this chat: Enabled.**", reply_markup=keyboard
+        "**پەسەندکردنی خۆکارانە بۆ ئەم چاتە: چالاککراوە ✅**", reply_markup=keyboard
     )
 
 
@@ -145,9 +154,9 @@ async def clear_pending_command(client, message):
         {"$set": {"pending_users": []}},
     )
     if result.modified_count > 0:
-        await message.reply_text("Cleared pending users.")
+        await message.reply_text("هەموو ئەندامە چاوەڕێکراوەکان سڕانەوە.")
     else:
-        await message.reply_text("No pending users to clear.")
+        await message.reply_text("هیچ ئەندامێک لە چاوەڕوانیدا نییە بۆ سڕینەوە.")
 
 
 @app.on_chat_join_request(filters.group)
@@ -173,11 +182,11 @@ async def accept(client, message: ChatJoinRequest):
                     upsert=True,
                 )
                 buttons = {
-                    "accept": f"manual_approve_{user.id}",
-                    "Decline": f"manual_decline_{user.id}",
+                    "قبووڵکردن ✅": f"manual_approve_{user.id}",
+                    "ڕەتکردنەوە ❌": f"manual_decline_{user.id}",
                 }
                 keyboard = ikb(buttons, int(2))
-                text = f"**User: {user.mention} has send a request to join our  group. Any admins can accept or decline it.**"
+                text = f"**بەکارهێنەر: {user.mention} داواکاری ناردووە بۆ جۆین بوون لە گرووپەکەمان. هەر ئەدمینێک دەتوانێت قبووڵی بکات یان ڕەتی بکاتەوە.**"
                 admin_data = [
                     i
                     async for i in app.get_chat_members(
@@ -203,7 +212,7 @@ async def manual(app, cb):
     if permission not in permissions:
         if from_user.id not in SUDOERS:
             return await cb.answer(
-                f"You don't have the required permission.\n Permission: {permission}",
+                f"تۆ دەسەڵاتی پێویستت نییە.\n دەسەڵاتی پێویست: {permission}",
                 show_alert=True,
             )
     datas = cb.data.split("_", 2)
