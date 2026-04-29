@@ -34,8 +34,3 @@ dependencies = [
     "pytz~=2024.1",
     "kurigram==2.2.12",
 ]
-
-[dependency-groups]
-dev = [
-    "ruff>=0.9.0",
-]
