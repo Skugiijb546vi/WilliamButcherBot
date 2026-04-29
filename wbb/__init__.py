@@ -47,26 +47,26 @@ class Log:
         print(f"[+]: {msg}")
         if self.save_to_file:
             with open(self.file_name, "a") as f:
-                f.write(f"[INFO]({time.ctime(time.time())}): {msg}\n")
+                f.write(f"[زانیاری]({time.ctime(time.time())}): {msg}\n")
 
     def error(self, msg):
         print(f"[-]: {msg}")
         if self.save_to_file:
             with open(self.file_name, "a") as f:
-                f.write(f"[ERROR]({time.ctime(time.time())}): {msg}\n")
+                f.write(f"[هەڵە]({time.ctime(time.time())}): {msg}\n")
 
 
 log = Log(True, "bot.log")
 
-# MongoDB client
-log.info("Initializing MongoDB client")
+# کڕایەنت بۆ مۆنگۆدیبی (MongoDB client)
+log.info("خەریکی پەیوەندیکردنم بە داتابەیسی مۆنگۆدیبی...")
 mongo_client = MongoClient(MONGO_URL)
 db = mongo_client.wbb
 
 
 async def load_sudoers():
     global SUDOERS
-    log.info("Loading sudoers")
+    log.info("بارکردنی لیستی ئەدمینە باڵاکان (Sudoers)...")
     sudoersdb = db.sudoers
     sudoers = await sudoersdb.find_one({"sudo": "sudo"})
     sudoers = [] if not sudoers else sudoers["sudoers"]
@@ -91,7 +91,7 @@ loop.run_until_complete(load_sudoers())
 SESSION = os.environ.get("SESSION_STRING") or os.environ.get("STRING_SESSION") or (SESSION_STRING if 'SESSION_STRING' in locals() else None)
 
 if not SESSION or SESSION.strip() == "":
-    log.info("SESSION_STRING missing, userbot client will be skipped.")
+    log.info("کۆدی SESSION_STRING نەدۆزرایەوە، بۆتە یارمەتیدەرەکە (Userbot) پشتگوێ دەخرێت.")
     app2 = None
 else:
     app2 = Client(
@@ -106,7 +106,7 @@ aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 app = Client("sessions/wbb", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH)
 
-log.info("Starting bot client")
+log.info("پێکردنی بۆتە سەرەکییەکە...")
 app.start()
 
 # پێناسەکردنی نرخەکان بۆ ئەوەی ئەگەر ئاسیستانت نەبوو، بۆتەکە کراش نەکات
@@ -118,9 +118,9 @@ USERBOT_DC_ID = 0
 
 if app2:
     try:
-        log.info("Starting userbot client")
+        log.info("پێکردنی بۆتە یارمەتیدەرەکە (Userbot)...")
         app2.start()
-        log.info("Gathering profile info for assistant")
+        log.info("کۆکردنەوەی زانیارییەکانی پرۆفایلی یارمەتیدەرەکە...")
         y = app2.get_me()
         USERBOT_ID = y.id
         USERBOT_NAME = y.first_name + (y.last_name or "")
@@ -130,10 +130,10 @@ if app2:
         if USERBOT_ID not in SUDOERS:
             SUDOERS.add(USERBOT_ID)
     except Exception as e:
-        log.error(f"Userbot failed to start: {e}. Bot will run without assistant.")
+        log.error(f"بۆتە یارمەتیدەرەکە شکستی هێنا لە کارکردن: {e}. بۆتە سەرەکییەکە بەبێ یارمەتیدەر بەردەوام دەبێت.")
         app2 = None
 
-log.info("Gathering profile info for bot")
+log.info("کۆکردنەوەی زانیارییەکانی پرۆفایلی بۆتەکە...")
 x = app.get_me()
 BOT_ID = x.id
 BOT_NAME = x.first_name + (x.last_name or "")
@@ -141,7 +141,7 @@ BOT_USERNAME = x.username
 BOT_MENTION = x.mention
 BOT_DC_ID = x.dc_id
 
-log.info("Initializing Telegraph client")
+log.info("پەیوەندیکردن بە سێرڤەری تێلیگراف (Telegraph)...")
 telegraph = Telegraph(domain="graph.org")
 telegraph.create_account(short_name=BOT_USERNAME)
 
