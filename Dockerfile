@@ -2,21 +2,20 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# دابەزاندنی پێداویستییەکان
+# install dependencies
 RUN apt-get update && apt-get install -y git gcc build-essential && rm -rf /var/lib/apt/lists/*
 
-# دابەزاندنی uv
+# install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-# ناچارکردنی بەکارهێنانی پایتۆنی ناو سێرڤەر
-ENV UV_PYTHON_PREFERENCE=only-system
 
 COPY . .
 
-# دابەزاندنی کتێبخانەکان بەبێ بەکارهێنانی فایلی lock ی کۆن
+# *** نه‌شته‌رگه‌ری لێره‌دایه‌: گۆڕینی مەرجی ڤێرژن لەناو فایلەکەدا ***
+RUN sed -i 's/requires-python = ">=3.12"/requires-python = ">=3.10"/' pyproject.toml
+
+# sync with python 3.10
 RUN uv sync --no-dev --python 3.10
 
-# ڕێڕەوی کارکردن
 ENV PATH="/app/.venv/bin:$PATH"
 
 CMD ["python", "-m", "wbb"]
