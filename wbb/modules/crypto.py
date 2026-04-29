@@ -6,10 +6,10 @@ from wbb.core.keyboard import ikb
 from wbb.core.sections import section
 from wbb.utils.http import get
 
-__MODULE__ = "Crypto"
+__MODULE__ = "کڕیپتۆ"
 __HELP__ = """
-/crypto [currency]
-        Get Real Time value from currency given.
+/crypto [ناوی_دراو]
+        بۆ وەرگرتنی نرخی ڕاستەقینە و ساتی دراوە دیجیتاڵییەکان.
 """
 
 
@@ -17,15 +17,15 @@ __HELP__ = """
 @capture_err
 async def crypto(_, message):
     if len(message.command) < 2:
-        return await message.reply("/crypto [currency]")
+        return await message.reply("تکایە بەم شێوەیە بنووسە:\n/crypto [ناوی_دراو]")
 
     currency = message.text.split(None, 1)[1].lower()
 
     btn = ikb(
-        {"Available Currencies": "https://plotcryptoprice.herokuapp.com"},
+        {"دراوە بەردەستەکان 💰": "https://plotcryptoprice.herokuapp.com"},
     )
 
-    m = await message.reply("`Processing...`")
+    m = await message.reply("`لە جێبەجێکردندایە...`")
 
     try:
         r = await get(
@@ -33,18 +33,18 @@ async def crypto(_, message):
             timeout=5,
         )
     except Exception:
-        return await m.edit("[ERROR]: Something went wrong.")
+        return await m.edit("[هەڵە]: کێشەیەک ڕوویدا لە وەرگرتنی نرخەکان.")
 
     if currency not in r:
         return await m.edit(
-            "[ERROR]: INVALID CURRENCY",
+            "[هەڵە]: ناوی دراوەکە هەڵەیە یان نەدۆزرایەوە.",
             reply_markup=btn,
         )
 
     body = {i.upper(): j for i, j in r.get(currency).items()}
 
     text = section(
-        "Current Crypto Rates For " + currency.upper(),
+        "نرخی ئێستای دراوی " + currency.upper(),
         body,
     )
     await m.edit(text, reply_markup=btn)
