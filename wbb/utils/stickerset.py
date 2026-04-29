@@ -40,9 +40,9 @@ async def get_sticker_set_by_name(
         return None
 
 
-# Known errors: (I don't see a reason to catch them as we, for sure, won't face them right now):
-# errors.exceptions.bad_request_400.PackShortNameInvalid -> pack name needs to end with _by_botname
-# errors.exceptions.bad_request_400.ShortnameOccupyFailed -> pack's name is already in use
+# هەڵە باوەکان: (پێم وا نییە پێویست بکات لێرەدا چارەسەریان بکەین چونکە لە ئێستادا تووشی نابین):
+# errors.exceptions.bad_request_400.PackShortNameInvalid -> ناوی پاکێجەکە دەبێت بە _by_botname کۆتایی بێت
+# errors.exceptions.bad_request_400.ShortnameOccupyFailed -> ناوی پاکێجەکە پێشتر لەلایەن کەسێکی ترەوە بەکارهێنراوە
 
 
 async def create_sticker_set(
