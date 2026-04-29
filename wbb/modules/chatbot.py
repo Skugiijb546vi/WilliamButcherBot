@@ -41,12 +41,11 @@ from wbb.core.decorators.errors import capture_err
 from wbb.utils.dbfunctions import add_chatbot, check_chatbot, rm_chatbot
 from wbb.utils.filter_groups import chatbot_group
 
-__MODULE__ = "ChatBot"
+__MODULE__ = "چاتبۆت (AI)"
 __HELP__ = """
-/chatbot [ENABLE|DISABLE] To Enable Or Disable ChatBot In Your Chat.
+/chatbot [ENABLE|DISABLE] بۆ چالاککردن یان ناچالاککردنی زیرەکی دەستکرد (چاتبۆت) لە گرووپەکەت.
 
-There's one module of this available for userbot also
-check userbot module help."""
+بەشێکی ئەم مۆدیوڵە بۆ بۆتە یارمەتیدەرەکەش بەردەستە، بۆیە دەتوانیت سەیری یارمەتییەکانی یوزەربۆت بکەیت."""
 
 
 async def chat_bot_toggle(message: Message, is_userbot: bool):
@@ -57,16 +56,16 @@ async def chat_bot_toggle(message: Message, is_userbot: bool):
     if status == "enable":
         if chat_id not in db:
             await add_chatbot(chat_id, is_userbot=is_userbot)
-            text = "Chatbot Enabled!"
+            text = "چاتبۆت چالاک کرا! ✅"
             return await eor(message, text=text)
-        await eor(message, text="ChatBot Is Already Enabled.")
+        await eor(message, text="چاتبۆت پێشتر چالاک کراوە.")
     elif status == "disable":
         if chat_id in db:
             await rm_chatbot(chat_id, is_userbot=is_userbot)
-            return await eor(message, text="Chatbot Disabled!")
-        await eor(message, text="ChatBot Is Already Disabled.")
+            return await eor(message, text="چاتبۆت ناچالاک کرا! ❌")
+        await eor(message, text="چاتبۆت پێشتر ناچالاک کراوە.")
     else:
-        await eor(message, text="**Usage:**\n/chatbot [ENABLE|DISABLE]")
+        await eor(message, text="**شێوازی بەکارهێنان:**\n/chatbot [ENABLE|DISABLE]")
 
 
 # Enabled | Disable Chatbot
@@ -76,7 +75,7 @@ async def chat_bot_toggle(message: Message, is_userbot: bool):
 @capture_err
 async def chatbot_status(_, message: Message):
     if len(message.command) != 2:
-        return await eor(message, text="**Usage:**\n/chatbot [ENABLE|DISABLE]")
+        return await eor(message, text="**شێوازی بەکارهێنان:**\n/chatbot [ENABLE|DISABLE]")
     await chat_bot_toggle(message, is_userbot=False)
 
 
@@ -131,7 +130,7 @@ async def chatbot_status_ubot(_, message: Message):
     if len(message.text.split()) != 2:
         return await eor(
             message,
-            text=f"**Usage:**\n{USERBOT_PREFIX}chatbot [ENABLE|DISABLE]",
+            text=f"**شێوازی بەکارهێنان:**\n{USERBOT_PREFIX}chatbot [ENABLE|DISABLE]",
         )
     await chat_bot_toggle(message, is_userbot=True)
 
