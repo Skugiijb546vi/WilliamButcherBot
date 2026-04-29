@@ -51,21 +51,21 @@ from wbb.utils.functions import (
     get_data_and_name,
 )
 
-__MODULE__ = "Filters"
-__HELP__ = """/filters To Get All The Filters In The Chat.
-/filter [FILTER_NAME] To Save A Filter(reply to a message).
+__MODULE__ = "فلتەرەکان"
+__HELP__ = """/filters بۆ بینینی هەموو فلتەرەکانی ناو گرووپ.
+/filter [ناوی_فلتەر] بۆ پاشەکەوتکردنی فلتەرێکی نوێ (ڕیپلای نامەیەک بکە).
 
-Supported filter types are Text, Animation, Photo, Document, Video, video notes, Audio, Voice.
+ئەو جۆرانەی پشتگیری دەکرێن: تێکست، ئەنیمەیشن، وێنە، دۆکیومێنت، ڤیدیۆ، ڤیدیۆ نۆت، دەنگ، وەیس.
 
-To use more words in a filter use.
-`/filter Hey_there` To filter "Hey there".
+بۆ بەکارهێنانی زیاتر لە وشەیەک لە ناوی فلتەرەکەدا:
+`/filter سڵاو_کاکە` بۆ فلتەرکردنی "سڵاو کاکە".
 
-/stop [FILTER_NAME] To Stop A Filter.
-/stopall To delete all the filters in a chat (permanently).
+/stop [ناوی_فلتەر] بۆ ڕاگرتن و سڕینەوەی فلتەرێک.
+/stopall بۆ سڕینەوەی هەموو فلتەرەکانی ناو گرووپەکە (بۆ هەمیشە).
 
-You can use markdown or html to save text too.
+دەتوانیت ماردکاون (Markdown) یان HTML بەکاربهێنیت بۆ ڕازاندنەوەی تێکستەکان.
 
-Checkout /markdownhelp to know more about formattings and other syntax.
+سەیری /markdownhelp بکە بۆ زانیاری زیاتر دەربارەی شێوازی نووسین و فۆرماتەکان.
 """
 
 
@@ -75,7 +75,7 @@ async def save_filters(_, message):
     try:
         if len(message.command) < 2:
             return await message.reply_text(
-                "**Usage:**\nReply to a message with /filter [FILTER_NAME] [CONTENT] To set a new filter."
+                "**شێوازی بەکارهێنان:**\nڕیپلای نامەیەک بکە بە /filter [ناوی_فلتەر] [ناوەرۆک] بۆ دانانی فلتەرێکی نوێ."
             )
         replied_message = message.reply_to_message
         if not replied_message:
@@ -83,7 +83,7 @@ async def save_filters(_, message):
         data, name = await get_data_and_name(replied_message, message)
         if data == "error":
             return await message.reply_text(
-                "**Usage:**\n__/filter [FILTER_NAME] [CONTENT]__\n`-----------OR-----------`\nReply to a message with.\n/filter [FILTER_NAME]."
+                "**شێوازی بەکارهێنان:**\n__/filter [ناوی_فلتەر] [ناوەرۆک]__\n`-----------یان-----------`\nڕیپلای نامەیەک بکە بە\n/filter [ناوی_فلتەر]."
             )
         if replied_message.text:
             _type = "text"
@@ -123,7 +123,7 @@ async def save_filters(_, message):
             data = await check_format(ikb, data)
             if not data:
                 return await message.reply_text(
-                    "**Wrong formatting, check the help section.**"
+                    "**شێوازی فۆرماتەکە هەڵەیە، سەیری بەشی یارمەتی بکە.**"
                 )
         name = name.replace("_", " ")
         _filter = {
@@ -133,10 +133,10 @@ async def save_filters(_, message):
         }
         chat_id = message.chat.id
         await save_filter(chat_id, name, _filter)
-        return await message.reply_text(f"__**Saved filter {name}.**__")
+        return await message.reply_text(f"__**فلتەری {name} بە سەرکەوتوویی پاشەکەوت کرا.**__")
     except UnboundLocalError:
         return await message.reply_text(
-            "**Replied message is inaccessible.\n`Forward the message and try again`**"
+            "**دەست ناگات بە نامە ڕیپلای کراوەکە.\n`نامەکە فۆروارد بکە و دووبارە هەوڵ بدەرەوە`**"
         )
 
 
@@ -145,9 +145,9 @@ async def save_filters(_, message):
 async def get_filterss(_, message):
     _filters = await get_filters_names(message.chat.id)
     if not _filters:
-        return await message.reply_text("**No filters in this chat.**")
+        return await message.reply_text("**هیچ فلتەرێک لەم گرووپەدا نییە.**")
     _filters.sort()
-    msg = f"List of filters in {message.chat.title} :\n"
+    msg = f"لیستی فلتەرەکان لە {message.chat.title} :\n"
     for _filter in _filters:
         msg += f"**-** `{_filter}`\n"
     await message.reply_text(msg)
@@ -157,16 +157,16 @@ async def get_filterss(_, message):
 @adminsOnly("can_change_info")
 async def del_filter(_, message):
     if len(message.command) < 2:
-        return await message.reply_text("**Usage:**\n__/stop [FILTER_NAME]__")
+        return await message.reply_text("**شێوازی بەکارهێنان:**\n__/stop [ناوی_فلتەر]__")
     name = message.text.split(None, 1)[1].strip()
     if not name:
-        return await message.reply_text("**Usage:**\n__/stop [FILTER_NAME]__")
+        return await message.reply_text("**شێوازی بەکارهێنان:**\n__/stop [ناوی_فلتەر]__")
     chat_id = message.chat.id
     deleted = await delete_filter(chat_id, name)
     if deleted:
-        await message.reply_text(f"**Deleted filter {name}.**")
+        await message.reply_text(f"**فلتەری {name} سڕایەوە.**")
     else:
-        await message.reply_text("**No such filter.**")
+        await message.reply_text("**فلتەرێکی لەو شێوەیە بوونی نییە.**")
 
 
 @app.on_message(
@@ -273,20 +273,20 @@ async def filters_re(_, message):
 async def stop_all(_, message):
     _filters = await get_filters_names(message.chat.id)
     if not _filters:
-        await message.reply_text("**No filters in this chat.**")
+        await message.reply_text("**هیچ فلتەرێک لەم گرووپەدا نییە.**")
     else:
         keyboard = InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "YES, DO IT", callback_data="stop_yes"
+                        "بەڵێ، بیکە ✅", callback_data="stop_yes"
                     ),
-                    InlineKeyboardButton("Cancel", callback_data="stop_no"),
+                    InlineKeyboardButton("پاشگەزبوونەوە ❌", callback_data="stop_no"),
                 ]
             ]
         )
         await message.reply_text(
-            "**Are you sure you want to delete all the filters in this chat forever ?.**",
+            "**ئایا دڵنیایت لە سڕینەوەی هەموو فلتەرەکانی ئەم گرووپە بۆ هەمیشە؟**",
             reply_markup=keyboard,
         )
 
@@ -299,7 +299,7 @@ async def stop_all_cb(_, cb):
     permission = "can_change_info"
     if permission not in permissions:
         return await cb.answer(
-            f"You don't have the required permission.\n Permission: {permission}",
+            f"تۆ دەسەڵاتی پێویستت نییە.\n دەسەڵات: {permission}",
             show_alert=True,
         )
     input = cb.data.split("_", 1)[1]
@@ -307,7 +307,7 @@ async def stop_all_cb(_, cb):
         stoped_all = await deleteall_filters(chat_id)
         if stoped_all:
             return await cb.message.edit(
-                "**Successfully deleted all filters on this chat.**"
+                "**بە سەرکەوتوویی هەموو فلتەرەکانی ئەم گرووپە سڕانەوە.**"
             )
     if input == "no":
         await cb.message.reply_to_message.delete()
