@@ -31,14 +31,14 @@ from wbb import app
 from wbb.core.decorators.errors import capture_err
 from wbb.utils.dbfunctions import get_couple, save_couple
 
-__MODULE__ = "Shippering"
-__HELP__ = "/detect_gay - To Choose Couple Of The Day"
+__MODULE__ = "کاپڵەکان"
+__HELP__ = "/detect_gay - بۆ هەڵبژاردنی کاپڵی (خۆشەویستانی) ئەمڕۆی گرووپ"
 
 
 # Date and time
 def dt():
-    # Set the timezone to Indian Standard Time
-    ist_timezone = pytz.timezone("Asia/Kolkata")
+    # Set the timezone to Iraq Standard Time
+    ist_timezone = pytz.timezone("Asia/Baghdad")
 
     # Get the current time in IST
     ist_now = datetime.now(ist_timezone)
@@ -71,9 +71,9 @@ def tomorrow():
 @capture_err
 async def couple(_, message):
     if message.chat.type == enums.ChatType.PRIVATE:
-        return await message.reply_text("This command only works in groups.")
+        return await message.reply_text("ئەم فەرمانە تەنها لەناو گرووپەکاندا کار دەکات.")
 
-    m = await message.reply("Detecting gay among us...")
+    m = await message.reply("خەریکی دۆزینەوەی کاپڵی ناو گرووپم...")
 
     try:
         chat_id = message.chat.id
@@ -85,7 +85,7 @@ async def couple(_, message):
                     user = await app.get_users(i.user.id)
                     list_of_users.append(user.id)
             if len(list_of_users) < 2:
-                return await m.edit("Not enough users")
+                return await m.edit("ئەندامی پێویست لە گرووپەکەدا نییە بۆ ئەم کارە")
             c1_id = random.choice(list_of_users)
             c2_id = random.choice(list_of_users)
             while c1_id == c2_id:
@@ -93,10 +93,10 @@ async def couple(_, message):
             c1_mention = (await app.get_users(c1_id)).mention
             c2_mention = (await app.get_users(c2_id)).mention
 
-            couple_selection_message = f"""**Couple of the day:**
+            couple_selection_message = f"""**کاپڵی ئەمڕۆی گرووپ:**
 {c1_mention} + {c2_mention} = ❤️
 
-__New couple of the day may be chosen at 12AM {tomorrow()}__"""
+__کاپڵی نوێی گرووپ دەتوانرێت سبەی کاتژمێر ١٢ی شەو هەڵبژێردرێت {tomorrow()}__"""
             await m.edit(couple_selection_message)
             couple = {"c1_id": c1_id, "c2_id": c2_id}
             await save_couple(chat_id, today(), couple)
@@ -106,11 +106,11 @@ __New couple of the day may be chosen at 12AM {tomorrow()}__"""
             c2_id = int(is_selected["c2_id"])
             c1_name = (await app.get_users(c1_id)).first_name
             c2_name = (await app.get_users(c2_id)).first_name
-            couple_selection_message = f"""Couple of the day:
+            couple_selection_message = f"""**کاپڵی ئەمڕۆی گرووپ:**
 [{c1_name}](tg://openmessage?user_id={c1_id}) + [{c2_name}](tg://openmessage?user_id={c2_id}) = ❤️
 
-__New couple of the day may be chosen at 12AM {tomorrow()}__"""
+__کاپڵی نوێی گرووپ دەتوانرێت سبەی کاتژمێر ١٢ی شەو هەڵبژێردرێت {tomorrow()}__"""
             await m.edit(couple_selection_message)
     except Exception as e:
         print(e)
-        await message.reply_text(e)
+        await message.reply_text(str(e))
