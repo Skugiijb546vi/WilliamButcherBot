@@ -3,23 +3,7 @@ MIT License
 
 Copyright (c) 2024 TheHamkerCat
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Permission is hereby granted, free of charge, to any person obtaining a copy...
 """
 import asyncio
 import importlib
@@ -95,11 +79,11 @@ async def start_bot():
             await app.edit_message_text(
                 restart_data["chat_id"],
                 restart_data["message_id"],
-                "**Restarted Successfully**",
+                "**بە سەرکەوتوویی پێکرایەوە ✅**",
             )
 
         else:
-            await app.send_message(LOG_GROUP_ID, "Bot started!")
+            await app.send_message(LOG_GROUP_ID, "بۆتەکە کەوتە کار!")
     except Exception:
         pass
 
@@ -118,25 +102,25 @@ home_keyboard_pm = InlineKeyboardMarkup(
     [
         [
             InlineKeyboardButton(
-                text="Commands ❓", callback_data="bot_commands"
+                text="فەرمانەکان ❓", callback_data="bot_commands"
             ),
             InlineKeyboardButton(
-                text="Repo 🛠",
+                text="سەرچاوە 🛠",
                 url="https://github.com/thehamkercat/WilliamButcherBot",
             ),
         ],
         [
             InlineKeyboardButton(
-                text="System Stats 🖥",
+                text="ئامارەکانی سیستەم 🖥",
                 callback_data="stats_callback",
             ),
             InlineKeyboardButton(
-                text="Support 👨", url="http://t.me/WBBSupport"
+                text="پاڵپشتی 👨", url="http://t.me/WBBSupport"
             ),
         ],
         [
             InlineKeyboardButton(
-                text="Add Me To Your Group 🎉",
+                text="مەمکە بە ئەدمین لە گرووپەکەت 🎉",
                 url=f"http://t.me/{BOT_USERNAME}?startgroup=new",
             )
         ],
@@ -144,29 +128,29 @@ home_keyboard_pm = InlineKeyboardMarkup(
 )
 
 home_text_pm = (
-    f"Hey there! My name is {BOT_NAME}. I can manage your "
-    + "group with lots of useful features, feel free to "
-    + "add me to your group."
+    f"سڵاو! ناوم {BOT_NAME}ـە. من دەتوانم گرووپەکەت بەڕێوەببەم "
+    + "بە کۆمەڵێک تایبەتمەندی زۆر بەسوودەوە، دەتوانیت هەر ئێستا "
+    + "مەمکەیتە ناو گرووپەکەتەوە."
 )
 
 keyboard = InlineKeyboardMarkup(
     [
         [
             InlineKeyboardButton(
-                text="Help ❓",
+                text="یارمەتی ❓",
                 url=f"t.me/{BOT_USERNAME}?start=help",
             ),
             InlineKeyboardButton(
-                text="Repo 🛠",
+                text="سەرچاوە 🛠",
                 url="https://github.com/thehamkercat/WilliamButcherBot",
             ),
         ],
         [
             InlineKeyboardButton(
-                text="System Stats 💻",
+                text="ئامارەکانی سیستەم 💻",
                 callback_data="stats_callback",
             ),
-            InlineKeyboardButton(text="Support 👨", url="t.me/WBBSupport"),
+            InlineKeyboardButton(text="پاڵپشتی 👨", url="t.me/WBBSupport"),
         ],
     ]
 )
@@ -176,17 +160,17 @@ FED_MARKUP = InlineKeyboardMarkup(
     [
         [
             InlineKeyboardButton(
-                "Fed Owner Commands", callback_data="fed_owner"
+                "فەرمانەکانی خاوەنی فیدراسیۆن", callback_data="fed_owner"
             ),
             InlineKeyboardButton(
-                "Fed Admin Commands", callback_data="fed_admin"
+                "فەرمانەکانی ئەدمینی فیدراسیۆن", callback_data="fed_admin"
             ),
         ],
         [
-            InlineKeyboardButton("User Commands", callback_data="fed_user"),
+            InlineKeyboardButton("فەرمانەکانی بەکارهێنەر", callback_data="fed_user"),
         ],
         [
-            InlineKeyboardButton("Back", callback_data="help_back"),
+            InlineKeyboardButton("گەڕانەوە", callback_data="help_back"),
         ],
     ]
 )
@@ -196,7 +180,7 @@ FED_MARKUP = InlineKeyboardMarkup(
 async def start(_, message):
     if message.chat.type != ChatType.PRIVATE:
         return await message.reply(
-            "Pm Me For More Details.", reply_markup=keyboard
+            "بۆ زانیاری زیاتر نامەم بۆ بنێرە (PM).", reply_markup=keyboard
         )
     if len(message.text.split()) > 1:
         user = await app.get_users(message.from_user.id)
@@ -206,7 +190,7 @@ async def start(_, message):
             chat_id = match.group(1)
             user_id = message.from_user.id
             chat = await app.get_chat(int(chat_id))
-            text = f"**The rules for `{chat.title}` are:\n\n**"
+            text = f"**یاساکانی گرووپی `{chat.title}` بریتین لە:\n\n**"
             rules = await get_rules(int(chat_id))
             if rules:
                 text = text + rules
@@ -221,8 +205,8 @@ async def start(_, message):
             else:
                 return await app.send_message(
                     user_id,
-                    "The group admins haven't set any rules for this chat yet. "
-                    "This probably doesn't mean it's lawless though...!",
+                    "ئەدمینەکانی گرووپ هێشتا هیچ یاسایەکیان بۆ ئەم چاتە دانەناوە. "
+                    "بەڵام ئەمە مانای ئەوە نییە بێ یاسایە...!",
                 )
         if name == "mkdwn_help":
             await message.reply(
@@ -233,7 +217,7 @@ async def start(_, message):
         elif "_" in name:
             module = name.split("_", 1)[1]
             text = (
-                f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n"
+                f"فەرموو ئەمە یارمەتییە بۆ مۆدیوڵی **{HELPABLE[module].__MODULE__}**:\n"
                 + HELPABLE[module].__HELP__
             )
             if module == "federation":
@@ -245,7 +229,7 @@ async def start(_, message):
             await message.reply(
                 text,
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("back", callback_data="help_back")]]
+                    [[InlineKeyboardButton("گەڕانەوە", callback_data="help_back")]]
                 ),
                 disable_web_page_preview=True,
             )
@@ -273,30 +257,30 @@ async def help_command(_, message):
                     [
                         [
                             InlineKeyboardButton(
-                                text="Click here",
+                                text="لێرە کلیک بکە",
                                 url=f"t.me/{BOT_USERNAME}?start=help_{name}",
                             )
                         ],
                     ]
                 )
                 await message.reply(
-                    f"Click on the below button to get help about {name}",
+                    f"کلیک لەم دوگمەیەی خوارەوە بکە بۆ وەرگرتنی یارمەتی دەربارەی {name}",
                     reply_markup=key,
                 )
             else:
                 await message.reply(
-                    "PM Me For More Details.", reply_markup=keyboard
+                    "بۆ زانیاری زیاتر نامەم بۆ بنێرە (PM).", reply_markup=keyboard
                 )
         else:
             await message.reply(
-                "Pm Me For More Details.", reply_markup=keyboard
+                "بۆ زانیاری زیاتر نامەم بۆ بنێرە (PM).", reply_markup=keyboard
             )
     else:
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:
                 text = (
-                    f"Here is the help for **{HELPABLE[name].__MODULE__}**:\n"
+                    f"فەرموو ئەمە یارمەتییە بۆ مۆدیوڵی **{HELPABLE[name].__MODULE__}**:\n"
                     + HELPABLE[name].__HELP__
                 )
                 await message.reply(text, disable_web_page_preview=True)
@@ -323,10 +307,10 @@ async def help_parser(name, keyboard=None):
     if not keyboard:
         keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
-        """Hello {first_name}, My name is {bot_name}.
-I'm a group management bot with some useful features.
-You can choose an option below, by clicking a button.
-Also you can ask anything in Support Group.
+        """سڵاو {first_name}، ناوم {bot_name}ـە.
+من بۆتێکی بەڕێوەبردنی گرووپم بە کۆمەڵێک تایبەتمەندی بەسوودەوە.
+دەتوانیت لە خوارەوە هەڵبژاردەیەک دیاری بکەیت بە کلیک کردن لەسەر دوگمەکان.
+هەروەها دەتوانیت هەر پرسیارێکت هەیە لە گرووپی پاڵپشتی بیکەیت.
 """.format(
             first_name=name,
             bot_name=BOT_NAME,
@@ -362,20 +346,20 @@ async def help_button(client, query):
     back_match = re.match(r"help_back", query.data)
     create_match = re.match(r"help_create", query.data)
     top_text = f"""
-Hello {query.from_user.first_name}, My name is {BOT_NAME}.
-I'm a group management bot with some useful features.
-You can choose an option below, by clicking a button.
-Also you can ask anything in Support Group.
+سڵاو {query.from_user.first_name}، ناوم {BOT_NAME}ـە.
+من بۆتێکی بەڕێوەبردنی گرووپم بە کۆمەڵێک تایبەتمەندی بەسوودەوە.
+دەتوانیت لە خوارەوە هەڵبژاردەیەک دیاری بکەیت بە کلیک کردن لەسەر دوگمەکان.
+هەروەها دەتوانیت هەر پرسیارێکت هەیە لە گرووپی پاڵپشتی بیکەیت.
 
-General command are:
- - /start: Start the bot
- - /help: Give this message
+فەرمانە گشتییەکان ئەمانەن:
+ - /start: کارپێکردنی بۆت
+ - /help: نیشاندانی ئەم نامەیە
  """
     if mod_match:
         module = (mod_match.group(1)).replace(" ", "_")
         text = (
             "{} **{}**:\n".format(
-                "Here is the help for", HELPABLE[module].__MODULE__
+                "فەرموو ئەمە یارمەتییە بۆ مۆدیوڵی", HELPABLE[module].__MODULE__
             )
             + HELPABLE[module].__HELP__
         )
@@ -388,7 +372,7 @@ General command are:
         await query.message.edit(
             text=text,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("back", callback_data="help_back")]]
+                [[InlineKeyboardButton("گەڕانەوە", callback_data="help_back")]]
             ),
             disable_web_page_preview=True,
         )
