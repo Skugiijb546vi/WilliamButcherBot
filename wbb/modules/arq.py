@@ -36,15 +36,15 @@ async def arq_stats(_, message):
     nlp = server.spam_protection
 
     body = {
-        "Uptime": server.uptime,
-        "Requests Since Uptime": server.requests,
-        "CPU": server.cpu,
-        "Memory": server.memory.server,
-        "Platform": server.platform,
-        "Python": server.python,
-        "Spam/Ham Ratio": f"{nlp.spam_messages}/{nlp.ham_messages}",
-        "Users": server.users,
-        "Bot": [server.bot],
+        "کاتی کارکردن (Uptime)": server.uptime,
+        "کۆی داواکارییەکان": server.requests,
+        "پڕۆسێسەر (CPU)": server.cpu,
+        "میمۆری (RAM)": server.memory.server,
+        "پلاتفۆڕم": server.platform,
+        "پایتۆن": server.python,
+        "ڕێژەی سپام/ئاسایی": f"{nlp.spam_messages}/{nlp.ham_messages}",
+        "بەکارهێنەران": server.users,
+        "بۆت": [server.bot],
     }
-    text = section("A.R.Q", body)
+    text = section("ئامارەکانی A.R.Q", body)
     await message.reply_text(text)
