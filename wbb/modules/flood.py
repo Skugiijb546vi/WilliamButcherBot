@@ -1,25 +1,6 @@
 """
 MIT License
-
 Copyright (c) 2024 TheHamkerCat
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 """
 from asyncio import get_running_loop, sleep
 from datetime import datetime, timedelta
@@ -40,11 +21,11 @@ from wbb.modules.admin import list_admins, member_permissions
 from wbb.utils.dbfunctions import flood_off, flood_on, is_flood_on
 from wbb.utils.filter_groups import flood_group
 
-__MODULE__ = "Flood"
+__MODULE__ = "دژە سپام"
 __HELP__ = """
-Anti-Flood system, the one who sends more than 10 messages in a row, gets muted for an hour (Except for admins).
+سیستەمی دژە-سپام، هەر کەسێک زیاتر لە ١٠ نامە لەسەر یەک بنێرێت، بۆ ماوەی کاتژمێرێک بێدەنگ دەکرێت (جگە لە ئەدمینەکان).
 
-/flood [ENABLE|DISABLE] - Turn flood detection on or off
+/flood [ENABLE|DISABLE] - چالاککردن یان ناچالاککردنی سیستەمەکە
 """
 
 DB = {}  # TODO Use mongodb instead of a fucking dict.
@@ -108,14 +89,14 @@ async def flood_control_func(_, message: Message):
             [
                 [
                     InlineKeyboardButton(
-                        text="🚨  Unmute  🚨",
+                        text="🚨  لابردنی بێدەنگی  🚨",
                         callback_data=f"unmute_{user_id}",
                     )
                 ]
             ]
         )
         m = await message.reply_text(
-            f"Imagine flooding the chat in front of me, Muted {mention} for an hour!",
+            f"دەتەوێت لەبەردەم مندا سپام بکەیت؟ {mention} بۆ ماوەی ١ کاتژمێر بێدەنگ کرا!",
             reply_markup=keyboard,
         )
 
@@ -138,15 +119,15 @@ async def flood_callback_func(_, cq: CallbackQuery):
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(
-            "You don't have enough permissions to perform this action.\n"
-            + f"Permission needed: {permission}",
+            "تۆ دەسەڵاتی پێویستت نییە بۆ ئەم کارە.\n"
+            + f"دەسەڵاتی پێویست: {permission}",
             show_alert=True,
         )
     user_id = cq.data.split("_")[1]
     await cq.message.chat.unban_member(user_id)
     text = cq.message.text.markdown
     text = f"~~{text}~~\n\n"
-    text += f"__User unmuted by {from_user.mention}__"
+    text += f"__بێدەنگیی بەکارهێنەر لادرا لەلایەن {from_user.mention}__"
     await cq.message.edit(text)
 
 
@@ -154,15 +135,15 @@ async def flood_callback_func(_, cq: CallbackQuery):
 @adminsOnly("can_change_info")
 async def flood_toggle(_, message: Message):
     if len(message.command) != 2:
-        return await message.reply_text("Usage: /flood [ENABLE|DISABLE]")
+        return await message.reply_text("**شێوازی بەکارهێنان:** /flood [ENABLE|DISABLE]")
     status = message.text.split(None, 1)[1].strip()
     status = status.lower()
     chat_id = message.chat.id
     if status == "enable":
         await flood_on(chat_id)
-        await message.reply_text("Enabled Flood Checker.")
+        await message.reply_text("سیستەمی پشکنینی سپام (Flood) چالاک کرا. ✅")
     elif status == "disable":
         await flood_off(chat_id)
-        await message.reply_text("Disabled Flood Checker.")
+        await message.reply_text("سیستەمی پشکنینی سپام (Flood) ناچالاک کرا. ❌")
     else:
-        await message.reply_text("Unknown Suffix, Use /flood [ENABLE|DISABLE]")
+        await message.reply_text("فەرمانەکە نادیارە، تکایە [enable یان disable] بەکاربهێنە.")
