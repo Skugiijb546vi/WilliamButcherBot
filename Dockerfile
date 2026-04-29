@@ -1,13 +1,13 @@
 # ============= BASE STAGE =============
-# لێرەدا پایتۆنمان گۆڕی بۆ 3.9 بۆ ئەوەی ئێرۆری Event Loop نەمێنێت
-FROM python:3.9-slim-bullseye AS base
+# بەکارهێنانی پایتۆن 3.10 بۆ ئەوەی هەم uv ئیش بکات و هەم ئێرۆری لووپ نەمێنێت
+FROM python:3.10-slim-bullseye AS base
 
 WORKDIR /wbb
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# install required system dependencies for python packages
+# install required system dependencies
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     curl ca-certificates \
     git gcc build-essential \
@@ -20,7 +20,7 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 ENV PATH="/root/.local/bin/:$PATH"
 
-# ئەمانە وەک خۆی دەمێننەوە
+# لێرەدا فایلی ڤێرژنمان سڕییەوە بۆ ئەوەی ناچار نەبێت 3.12 بەکاربهێنێت
 COPY pyproject.toml .
 COPY uv.lock .
 
@@ -28,9 +28,10 @@ COPY uv.lock .
 FROM base
 
 ENV UV_NO_DEV=1
-RUN uv sync
+# ئەم دێڕە ناچار دەکات بە پایتۆنی 3.10 ئیش بکات
+RUN uv sync --python 3.10
 
 COPY . .
 
 # Starting Bot
-ENTRYPOINT ["uv", "run", "python", "-m", "wbb"]
+ENTRYPOINT ["uv", "run", "--python", "3.10", "python", "-m", "wbb"]
