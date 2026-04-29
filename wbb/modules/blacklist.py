@@ -38,11 +38,11 @@ from wbb.utils.dbfunctions import (
 )
 from wbb.utils.filter_groups import blacklist_filters_group
 
-__MODULE__ = "Blacklist"
+__MODULE__ = "وشە قەدەغەکراوەکان"
 __HELP__ = """
-/blacklisted - Get All The Blacklisted Words In The Chat.
-/blacklist [WORD|SENTENCE] - Blacklist A Word Or A Sentence.
-/whitelist [WORD|SENTENCE] - Whitelist A Word Or A Sentence.
+/blacklisted - بینینی هەموو ئەو وشە و ڕستانەی لە گرووپەکەدا قەدەغەکراون.
+/blacklist [وشە|ڕستە] - قەدەغەکردنی وشەیەک یان ڕستەیەک.
+/whitelist [وشە|ڕستە] - لابردنی قەدەغەکردن لەسەر وشەیەک یان ڕستەیەک.
 """
 
 
@@ -50,15 +50,15 @@ __HELP__ = """
 @adminsOnly("can_restrict_members")
 async def save_filters(_, message):
     if len(message.command) < 2:
-        return await message.reply_text("Usage:\n/blacklist [WORD|SENTENCE]")
+        return await message.reply_text("**شێوازی بەکارهێنان:**\n/blacklist [وشە|ڕستە]")
     word = message.text.split(None, 1)[1].strip()
     if not word:
         return await message.reply_text(
-            "**Usage**\n__/blacklist [WORD|SENTENCE]__"
+            "**شێوازی بەکارهێنان:**\n__/blacklist [وشە|ڕستە]__"
         )
     chat_id = message.chat.id
     await save_blacklist_filter(chat_id, word)
-    await message.reply_text(f"__**Blacklisted {word}.**__")
+    await message.reply_text(f"__**وشەی {word} خرایە لیستی قەدەغەکراوەکانەوە.**__")
 
 
 @app.on_message(filters.command("blacklisted") & ~filters.private)
@@ -66,9 +66,9 @@ async def save_filters(_, message):
 async def get_filterss(_, message):
     data = await get_blacklisted_words(message.chat.id)
     if not data:
-        await message.reply_text("**No blacklisted words in this chat.**")
+        await message.reply_text("**هیچ وشەیەکی قەدەغەکراو لەم گرووپەدا نییە.**")
     else:
-        msg = f"List of blacklisted words in {message.chat.title} :\n"
+        msg = f"لیستی وشە قەدەغەکراوەکان لە {message.chat.title} :\n"
         for word in data:
             msg += f"**-** `{word}`\n"
         await message.reply_text(msg)
@@ -78,15 +78,15 @@ async def get_filterss(_, message):
 @adminsOnly("can_restrict_members")
 async def del_filter(_, message):
     if len(message.command) < 2:
-        return await message.reply_text("Usage:\n/whitelist [WORD|SENTENCE]")
+        return await message.reply_text("**شێوازی بەکارهێنان:**\n/whitelist [وشە|ڕستە]")
     word = message.text.split(None, 1)[1].strip()
     if not word:
-        return await message.reply_text("Usage:\n/whitelist [WORD|SENTENCE]")
+        return await message.reply_text("**شێوازی بەکارهێنان:**\n/whitelist [وشە|ڕستە]")
     chat_id = message.chat.id
     deleted = await delete_blacklist_filter(chat_id, word)
     if deleted:
-        return await message.reply_text(f"**Whitelisted {word}.**")
-    await message.reply_text("**No such blacklist filter.**")
+        return await message.reply_text(f"**وشەی {word} لە لیستی قەدەغەکراوەکان دەرهێنرا.**")
+    await message.reply_text("**هیچ وشەیەکی قەدەغەکراو بەم ناوەوە بوونی نییە.**")
 
 
 @app.on_message(filters.text & ~filters.private, group=blacklist_filters_group)
@@ -118,6 +118,6 @@ async def blacklist_filters_re(_, message):
                 return
             return await app.send_message(
                 chat_id,
-                f"Muted {user.mention} [`{user.id}`] for 1 hour "
-                + f"due to a blacklist match on {word}.",
+                f"بەکارهێنەر {user.mention} [`{user.id}`] بۆ ماوەی ١ کاتژمێر بێدەنگ کرا "
+                + f"بەهۆی بەکارهێنانی وشەی قەدەغەکراوی: {word}.",
             )
