@@ -30,8 +30,8 @@ from wbb import MOD_LOAD, MOD_NOLOAD
 
 
 def __list_all_modules():
-    # This generates a list of modules in this
-    # folder for the * in __main__ to work.
+    # ئەمە لیستێکی مۆدیوڵەکانی ئەم فۆڵدەرە دروست دەکات
+    # بۆ ئەوەی نیشانەی * لە ناو فایلی __main__ کار بکات.
     mod_paths = glob.glob(dirname(__file__) + "/*.py")
     all_modules = [
         basename(f)[:-3]
@@ -62,7 +62,7 @@ def __list_all_modules():
     return all_modules
 
 
-print("[INFO]: IMPORTING MODULES")
+print("[زانیاری]: هێنانە ناوەوەی مۆدیوڵەکان...")
 importlib.import_module("wbb.modules.__main__")
 ALL_MODULES = sorted(__list_all_modules())
 __all__ = ALL_MODULES + ["ALL_MODULES"]
