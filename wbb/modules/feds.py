@@ -36,12 +36,12 @@ from wbb.core.decorators.errors import capture_err
 from wbb.utils.dbfeds import *
 from wbb.utils.functions import extract_user, extract_user_and_reason
 
-__MODULE__ = "Federation"
+__MODULE__ = "فیدراسیۆن"
 __HELP__ = """
-Everything is fun, until a spammer starts entering your group, and you have to block it. Then you need to start banning more, and more, and it hurts.
-But then you have many groups, and you don't want this spammer to be in one of your groups - how can you deal? Do you have to manually block it, in all your groups?\n
-**No longer!** With Federation, you can make a ban in one chat overlap with all other chats.\n
-You can even designate federation admins, so your trusted admin can ban all the spammers from chats you want to protect.\n\n
+هەموو شتێک خۆشە تا ئەو کاتەی سپامەرێک دێتە ناو گرووپەکەتەوە و دەبێت باندی بکەیت. دواتر دەبێت لە گرووپەکانی تریش باندی بکەیت و ئەمەش کاتێکی زۆرت لێ دەبات.
+بەڵام کاتێک چەندین گرووپت هەیە، ناتەوێت ئەم سپامەرە لە هیچ کامیاندا بێت - چۆن چارەسەری دەکەیت؟ ئایا دەبێت بە دەستی لە هەموو گرووپەکان باندی بکەیت؟\n
+**ئیتر نا!** بە فیدراسیۆن (Federation)، دەتوانیت باندێک لە یەک گرووپدا بکەیت و لە هەموو گرووپەکانی تردا جێبەجێ ببێت.\n
+تەنانەت دەتوانیت ئەدمینی فیدراسیۆن دیاری بکەیت، بۆ ئەوەی ئەدمینە جێگەی متمانەکانت بتوانن سپامەرەکان لە هەموو ئەو گرووپانە باند بکەن کە دەتەوێت بییانپارێزیت.\n\n
 """
 
 
@@ -55,11 +55,11 @@ async def new_fed(client, message):
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
         return await message.reply_text(
-            "Federations can only be created by privately messaging me."
+            "دروستکردنی فیدراسیۆن تەنها لە ڕێگەی نامەی تایبەت (PV) بۆ من دەبێت."
         )
 
     if len(message.command) < 2:
-        return await message.reply_text("Please write the name of the federation!")
+        return await message.reply_text("تکایە ناوێک بۆ فیدراسیۆنەکە بنووسە!")
 
     fednam = message.text.split(None, 1)[1]
     if not fednam == "":
@@ -82,21 +82,21 @@ async def new_fed(client, message):
         )
         if not x:
             return await message.reply_text(
-                f"Can't federate! Please contact {SUPPORT_CHAT} if the problem persist."
+                f"نەمتوانی فیدراسیۆن دروست بکەم! تکایە پەیوەندی بکە بە {SUPPORT_CHAT} ئەگەر کێشەکە بەردەوام بوو."
             )
 
         await message.reply_text(
-            "**You have succeeded in creating a new federation!**"
-            "\nName: `{}`"
-            "\nID: `{}`"
-            "\n\nUse the command below to join the federation:"
+            "**پیرۆزە! بە سەرکەوتوویی فیدراسیۆنێکی نوێت دروست کرد!**"
+            "\nناو: `{}`"
+            "\nئایدی: `{}`"
+            "\n\nئەم فەرمانەی خوارەوە بەکاربهێنە بۆ بەستنەوەی گرووپەکەت:"
             "\n`/joinfed {}`".format(fed_name, fed_id, fed_id),
             parse_mode=ParseMode.MARKDOWN,
         )
         try:
             await app.send_message(
                 LOG_GROUP_ID,
-                "New Federation: <b>{}</b>\nID: <pre>{}</pre>".format(
+                "فیدراسیۆنی نوێ: <b>{}</b>\nئایدی: <pre>{}</pre>".format(
                     fed_name, fed_id
                 ),
                 parse_mode=ParseMode.HTML,
@@ -105,7 +105,7 @@ async def new_fed(client, message):
             log.info("Cannot send a message to EVENT_LOGS")
     else:
         await message.reply_text(
-            "Please write down the name of the federation"
+            "تکایە ناوێک بۆ فیدراسیۆنەکە بنووسە"
         )
 
 
@@ -116,7 +116,7 @@ async def del_fed(client, message):
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
         return await message.reply_text(
-            "Federations can only be deleted by privately messaging me."
+            "سڕینەوەی فیدراسیۆن تەنها لە ڕێگەی نامەی تایبەت (PV) بۆ من دەبێت."
         )
 
     args = message.text.split(" ", 1)
@@ -124,33 +124,33 @@ async def del_fed(client, message):
         is_fed_id = args[1].strip()
         getinfo = await get_fed_info(is_fed_id)
         if getinfo is False:
-            return await message.reply_text("This federation does not exist.")
+            return await message.reply_text("ئەم فیدراسیۆنە بوونی نییە.")
 
         if getinfo["owner_id"] == user.id or user.id == SUDOERS:
             fed_id = is_fed_id
         else:
-            return await message.reply_text("Only federation owners can do this!")
+            return await message.reply_text("تەنها خاوەنی فیدراسیۆن دەتوانێت ئەم کارە بکات!")
 
     else:
-        return await message.reply_text("What should I delete?")
+        return await message.reply_text("چ فیدراسیۆنێک بسڕمەوە؟")
 
     is_owner = await is_user_fed_owner(fed_id, user.id)
     if is_owner is False:
-        return await message.reply_text("Only federation owners can do this!")
+        return await message.reply_text("تەنها خاوەنی فیدراسیۆن دەتوانێت ئەم کارە بکات!")
 
     await message.reply_text(
-        "You sure you want to delete your federation? This cannot be reverted, you will lose your entire ban list, and '{}' will be permanently lost.".format(
+        "ئایا دڵنیایت لە سڕینەوەی فیدراسیۆنەکەت؟ ئەم کارە ناگەڕێتەوە، هەموو لیستی باندەکانت لەدەست دەدەیت و '{}' بۆ هەمیشە دەسڕێتەوە.".format(
             getinfo["fed_name"]
         ),
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "⚠️ Delete Federation ⚠️",
+                        "⚠️ سڕینەوەی فیدراسیۆن ⚠️",
                         callback_data=f"rmfed_{fed_id}",
                     )
                 ],
-                [InlineKeyboardButton("Cancel", callback_data="rmfed_cancel")],
+                [InlineKeyboardButton("پاشگەزبوونەوە", callback_data="rmfed_cancel")],
             ]
         ),
     )
@@ -163,40 +163,40 @@ async def fedtransfer(client, message):
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
         return await message.reply_text(
-            "Federations can only be transferred by privately messaging me."
+            "گواستنەوەی فیدراسیۆن تەنها لە ڕێگەی نامەی تایبەت (PV) بۆ من دەبێت."
         )
 
     is_feds = await get_feds_by_owner(int(user.id))
     if not is_feds:
         return await message.reply_text(
-            "**You haven't created any federations.**"
+            "**تۆ هیچ فیدراسیۆنێکت دروست نەکردووە.**"
         )
     if len(message.command) < 2:
         return await message.reply_text(
-            "**You needed to specify a user or reply to their message!**"
+            "**پێویستە بەکارهێنەرێک دیاری بکەیت یان ڕیپلای نامەکەی بکەیت!**"
         )
     user_id, fed_id = await extract_user_and_reason(message)
     if not user_id:
-        return await message.reply_text("I can't find that user.")
+        return await message.reply_text("ناتوانم ئەو بەکارهێنەرە بدۆزمەوە.")
     if not fed_id:
         return await message.reply(
-            "you need to provide a Fed Id.\n\nUsage:\n/fedtransfer @usename Fed_Id."
+            "پێویستە ئایدی فیدراسیۆن (Fed ID) بدەیت.\n\nشێواز:\n/fedtransfer @username Fed_Id."
         )
     is_owner = await is_user_fed_owner(fed_id, user.id)
     if is_owner is False:
-        return await message.reply_text("Only federation owners can do this!")
+        return await message.reply_text("تەنها خاوەنی فیدراسیۆن دەتوانێت ئەم کارە بکات!")
 
     await message.reply_text(
-        "**You sure you want to transfer your federation? This cannot be reverted.**",
+        "**ئایا دڵنیایت لە گواستنەوەی خاوەندارێتی فیدراسیۆنەکەت؟ ئەم کارە ناگەڕێتەوە.**",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "⚠️ Transfer Federation ⚠️",
+                        "⚠️ گواستنەوەی فیدراسیۆن ⚠️",
                         callback_data=f"trfed_{user_id}|{fed_id}",
                     )
                 ],
-                [InlineKeyboardButton("Cancel", callback_data="trfed_cancel")],
+                [InlineKeyboardButton("پاشگەزبوونەوە", callback_data="trfed_cancel")],
             ]
         ),
     )
@@ -211,15 +211,15 @@ async def myfeds(client, message):
     if is_feds:
         response_text = "\n\n".join(
             [
-                f"{i + 1}) **Fed Name:** {fed['fed_name']}\n  **Fed Id:** `{fed['fed_id']}`"
+                f"{i + 1}) **ناوی فیدراسیۆن:** {fed['fed_name']}\n  **ئایدی فیدراسیۆن:** `{fed['fed_id']}`"
                 for i, fed in enumerate(is_feds)
             ]
         )
         await message.reply_text(
-            f"**Here are the federations you have created:**\n\n{response_text}"
+            f"**ئەمە لیستی ئەو فیدراسیۆنانەیە کە تۆ دروستت کردوون:**\n\n{response_text}"
         )
     else:
-        await message.reply_text("**You haven't created any federations.**")
+        await message.reply_text("**تۆ هیچ فیدراسیۆنێکت دروست نەکردووە.**")
 
 
 @app.on_message(filters.command("renamefed"))
@@ -230,13 +230,13 @@ async def rename_fed(client, message):
     args = msg.text.split(None, 2)
 
     if len(args) < 3:
-        return await msg.reply_text("usage: /renamefed fed_id newname")
+        return await msg.reply_text("شێواز: /renamefed fed_id ناوی_نوێ")
 
     fed_id, newname = args[1], args[2]
     verify_fed = await get_fed_info(fed_id)
 
     if not verify_fed:
-        return await msg.reply_text("This fed does not exist in my database!")
+        return await msg.reply_text("ئەم فیدراسیۆنە لە بنکەی زانیارییەکانمدا نییە!")
 
     if await is_user_fed_owner(fed_id, user.id):
         fedsdb.update_one(
@@ -245,10 +245,10 @@ async def rename_fed(client, message):
             upsert=True,
         )
         await msg.reply_text(
-            f"Successfully renamed your fed name to {newname}!"
+            f"بە سەرکەوتوویی ناوی فیدراسیۆنەکەت گۆڕدرا بۆ {newname}!"
         )
     else:
-        await msg.reply_text("Only federation owner can do this!")
+        await msg.reply_text("تەنها خاوەنی فیدراسیۆن دەتوانێت ئەم کارە بکات!")
 
 
 @app.on_message(filters.command(["setfedlog", "unsetfedlog"]))
@@ -259,7 +259,7 @@ async def fed_log(client, message):
     if message.chat.type == ChatType.PRIVATE:
         if len(message.command) < 3:
             return await message.reply_text(
-                f"Usage:\n\n /{message.command[0]} [channel_id] [fed_id]."
+                f"شێواز:\n\n /{message.command[0]} [channel_id] [fed_id]."
             )
         ids = message.text.split(" ", 2)
         chat_id = ids[1]
@@ -273,7 +273,7 @@ async def fed_log(client, message):
         chat_id = chat.id 
         if len(message.command) < 2:
             return await message.reply_text(
-                "Please provide the Id of the federation with the command!"
+                "تکایە ئایدی فیدراسیۆنەکە لەگەڵ فەرمانەکە بنووسە!"
             )
         fed_id = message.text.split(" ", 1)[1].strip()
 
@@ -281,7 +281,7 @@ async def fed_log(client, message):
         chat_member = await app.get_chat_member(chat_id, user.id)
         
     except ChatAdminRequired:
-        return await message.reply_text("I need to be an admin in the channel")
+        return await message.reply_text("پێویستە من لە کەناڵەکە ئەدمین بم")
         
     except Exception as e:
         print(e)
@@ -289,12 +289,12 @@ async def fed_log(client, message):
         
     if not chat_member.status in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
         return await message.reply_text(
-            "You need to be the channel owner or admin to use this command"
+            "پێویستە تۆ خاوەن یان ئەدمینی کەناڵەکە بیت بۆ بەکارهێنانی ئەم فەرمانە"
         )
 
     info = await get_fed_info(fed_id)
     if info is False:
-        return await message.reply_text("This federation does not exist.")
+        return await message.reply_text("ئەم فیدراسیۆنە بوونی نییە.")
 
     if await is_user_fed_owner(fed_id, user.id):
         if "/unsetfedlog" in message.text:
@@ -304,10 +304,10 @@ async def fed_log(client, message):
         loged = await set_log_chat(fed_id, log_group_id)
         if "/unsetfedlog" in message.text:
             return await message.reply_text(
-                "log channel removed successfully."
+                "کەناڵی لۆگ بە سەرکەوتوویی لادرا."
             )
         else:
-            await message.reply_text("log channel set successfully.")
+            await message.reply_text("کەناڵی لۆگ بە سەرکەوتوویی دانرا.")
 
 
 @app.on_message(filters.command("chatfed"))
@@ -317,7 +317,7 @@ async def fed_chat(client, message):
     user = message.from_user
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!",
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!",
         )
 
     fed_id = await get_fed_id(chat.id)
@@ -330,16 +330,16 @@ async def fed_chat(client, message):
         pass
     else:
         return await message.reply_text(
-            "You must be an admin to execute this command"
+            "دەبێت ئەدمین بیت بۆ جێبەجێکردنی ئەم فەرمانە"
         )
 
     if not fed_id:
-        return await message.reply_text("This group is not in any federation!")
+        return await message.reply_text("ئەم گرووپە لە هیچ فیدراسیۆنێکدا نییە!")
 
     info = await get_fed_info(fed_id)
 
-    text = "This group is part of the following federation:"
-    text += "\n{} (ID: <code>{}</code>)".format(info["fed_name"], fed_id)
+    text = "ئەم گرووپە بەشێکە لەم فیدراسیۆنەی خوارەوە:"
+    text += "\n{} (ئایدی: <code>{}</code>)".format(info["fed_name"], fed_id)
 
     await message.reply_text(text, parse_mode=ParseMode.HTML)
 
@@ -351,7 +351,7 @@ async def join_fed(client, message):
     user = message.from_user
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!",
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!",
         )
 
     member = await app.get_chat_member(chat.id, user.id)
@@ -364,12 +364,12 @@ async def join_fed(client, message):
             pass
         else:
             return await message.reply_text(
-                "Only group creators can use this command!"
+                "تەنها دروستکەری گرووپ دەتوانێت ئەم فەرمانە بەکاربهێنێت!"
             )
 
     if fed_id:
         return await message.reply_text(
-            "You cannot join two federations from one chat"
+            "ناتوانیت یەک گرووپ بە دوو فیدراسیۆنەوە ببەستیتەوە"
         )
 
     args = message.text.split(" ", 1)
@@ -377,33 +377,33 @@ async def join_fed(client, message):
         fed_id = args[1].strip()
         getfed = await search_fed_by_id(fed_id)
         if getfed is False:
-            return await message.reply_text("Please enter a valid federation ID")
+            return await message.reply_text("تکایە ئایدییەکی ڕاستی فیدراسیۆن بنووسە")
  
 
         x = await chat_join_fed(fed_id, chat.title, chat.id)
         if not x:
             return await message.reply_text(
-                f"Failed to join federation! Please contact {SUPPORT_CHAT} if this problem persists!"
+                f"نەمتوانی گرووپەکە ببەستمەوە! تکایە پەیوەندی بکە بە {SUPPORT_CHAT} ئەگەر کێشەکە بەردەوام بوو!"
             )
 
         get_fedlog = getfed["log_group_id"]
         if get_fedlog:
             await app.send_message(
                 get_fedlog,
-                "Chat **{}** has joined the federation **{}**".format(
+                "گرووپی **{}** بەسترا بە فیدراسیۆنی **{}**".format(
                     chat.title, getfed["fed_name"]
                 ),
                 parse_mode=ParseMode.MARKDOWN,
             )
 
         await message.reply_text(
-            "This group has joined the federation: {}!".format(
+            "ئەم گرووپە بە سەرکەوتوویی بەسترا بە فیدراسیۆنی: {}!".format(
                 getfed["fed_name"]
             )
         )
     else:
         await message.reply_text(
-            "You need to specify which federation you're asking about by giving me a FedID!"
+            "پێویستە ئایدی فیدراسیۆن (FedID) بنووسیت بۆ ئەوەی گرووپەکەی پێ ببەستیتەوە!"
         )
 
 
@@ -415,7 +415,7 @@ async def leave_fed(client, message):
 
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!",
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!",
         )
 
     fed_id = await get_fed_id(int(chat.id))
@@ -428,22 +428,22 @@ async def leave_fed(client, message):
             if get_fedlog:
                 await app.send_message(
                     get_fedlog,
-                    "Chat **{}** has left the federation **{}**".format(
+                    "گرووپی **{}** لە فیدراسیۆنی **{}** جیا بووەوە".format(
                         chat.title, fed_info["fed_name"]
                     ),
                     parse_mode=ParseMode.MARKDOWN,
                 )
             await message.reply_text(
-                "This group has left the federation {}!".format(
+                "ئەم گرووپە لە فیدراسیۆنی {} جیا بووەوە!".format(
                     fed_info["fed_name"]
                 ),
             )
         else:
             await message.reply_text(
-                "How can you leave a federation that you never joined?!"
+                "چۆن دەتوانیت لە فیدراسیۆنێک لێفت بکەیت کە هەرگیز جۆینت نەکردووە؟!"
             )
     else:
-        await message.reply_text("Only group creators can use this command!")
+        await message.reply_text("تەنها دروستکەری گرووپ دەتوانێت ئەم فەرمانە بەکاربهێنێت!")
 
 
 @app.on_message(filters.command("fedchats"))
@@ -453,18 +453,18 @@ async def fed_chat(client, message):
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
         return await message.reply_text(
-            "Fedchats can only be checked by privately messaging me."
+            "بینینی لیستەکە تەنها لە ڕێگەی تایبەت (PV) دەبێت."
         )
     if len(message.command) < 2:
         return await message.reply_text(
-            "Please write the Id of the federation!\n\nUsage:\n/fedchats fed_id"
+            "تکایە ئایدی فیدراسیۆنەکە بنووسە!\n\nشێواز:\n/fedchats fed_id"
         )
     args = message.text.split(" ", 1)
     if len(args) > 1:
         fed_id = args[1].strip()
         info = await get_fed_info(fed_id)
         if info is False:
-            return await message.reply_text("This federation does not exist.")
+            return await message.reply_text("ئەم فیدراسیۆنە بوونی نییە.")
         fed_owner = info["owner_id"]
         fed_admins = info["fadmins"]
         all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
@@ -472,13 +472,13 @@ async def fed_chat(client, message):
             pass
         else:
             return await message.reply_text(
-                "You need to be a Fed Admin to use this command"
+                "دەبێت ئەدمینی فیدراسیۆن بیت بۆ بەکارهێنانی ئەم فەرمانە"
             )
 
         chat_ids, chat_names = await chat_id_and_names_in_fed(fed_id)
         if not chat_ids:
             return await message.reply_text(
-                "There are no chats in this federation!"
+                "هیچ گرووپێک لەم فیدراسیۆنەدا نییە!"
             )
         text = "\n".join(
             [
@@ -487,7 +487,7 @@ async def fed_chat(client, message):
             ]
         )
         await message.reply_text(
-            f"**Here are the list of chats connected to this federation:**\n\n{text}"
+            f"**ئەمە لیستی ئەو گرووپانەیە کە بەم فیدراسیۆنەوە بەستراونەتەوە:**\n\n{text}"
         )
 
 
@@ -497,13 +497,13 @@ async def fed_info(client, message):
     if len(message.command) < 2:
         fed_id = await get_fed_id(message.chat.id)
         if not fed_id:
-            return await message.reply_text("Please provide the Fed Id to get information!")
+            return await message.reply_text("تکایە ئایدی فیدراسیۆن بنووسە بۆ وەرگرتنی زانیاری!")
     else:
         fed_id = message.text.split(" ", 1)[1].strip()
     fed_info = await get_fed_info(fed_id)
 
     if not fed_info:
-        return await message.reply_text("Federation not found.")
+        return await message.reply_text("فیدراسیۆن نەدۆزرایەوە.")
 
     fed_name = fed_info.get("fed_name")
     owner_mention = fed_info.get("owner_mention")
@@ -512,12 +512,12 @@ async def fed_info(client, message):
     chat_ids_count = len(fed_info.get("chat_ids", []))
 
     reply_text = (
-        f"**Federation Information:**\n\n"
-        f"**Fed Name:** {fed_name}\n"
-        f"**Owner:** {owner_mention}\n"
-        f"**Number of Fed Admins:** {fadmin_count}\n"
-        f"**Number of Banned Users:** {banned_users_count}\n"
-        f"**Number of Chats:** {chat_ids_count}"
+        f"**زانیاری فیدراسیۆن:**\n\n"
+        f"**ناوی فیدراسیۆن:** {fed_name}\n"
+        f"**خاوەن:** {owner_mention}\n"
+        f"**ژمارەی ئەدمینەکان:** {fadmin_count}\n"
+        f"**ژمارەی باندکراوەکان:** {banned_users_count}\n"
+        f"**ژمارەی گرووپەکان:** {chat_ids_count}"
     )
 
     await message.reply_text(reply_text)
@@ -529,17 +529,17 @@ async def get_all_fadmins_mentions(client, message):
     if len(message.command) < 2:
         fed_id = await get_fed_id(message.chat.id)
         if not fed_id:
-            return await message.reply_text("Please provide me the Fed Id to search!")
+            return await message.reply_text("تکایە ئایدی فیدراسیۆن بنووسە بۆ گەڕان!")
     else:
         fed_id = message.text.split(" ", 1)[1].strip()
     fed_info = await get_fed_info(fed_id)
     if not fed_info:
-        return await message.reply_text("Federation not found.")
+        return await message.reply_text("فیدراسیۆن نەدۆزرایەوە.")
 
     fadmin_ids = fed_info.get("fadmins", [])
     if not fadmin_ids:
         return await message.reply_text(
-            f"**Owner: {fed_info['owner_mention']}\n\nNo fadmins found in the federation."
+            f"**خاوەن: {fed_info['owner_mention']}\n\nهیچ ئەدمینێک لەم فیدراسیۆنەدا نییە."
         )
 
     user_mentions = []
@@ -550,7 +550,7 @@ async def get_all_fadmins_mentions(client, message):
         except Exception:
             user_mentions.append(f"● `Admin🥷`[`{user_id}`]")
     reply_text = (
-        f"**Owner: {fed_info['owner_mention']}\n\nList of fadmins:**\n"
+        f"**خاوەن: {fed_info['owner_mention']}\n\nلیستی ئەدمینەکان:**\n"
         + "\n".join(user_mentions)
     )
 
@@ -566,13 +566,13 @@ async def fpromote(client, message):
 
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!",
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!",
         )
 
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text(
-            "You need to add a federation to this chat first!"
+            "دەبێت سەرەتا فیدراسیۆنێک بۆ ئەم گرووپە زیاد بکەیت!"
         )
 
     if await is_user_fed_owner(fed_id, user.id) or user.id in SUDOERS:
@@ -580,7 +580,7 @@ async def fpromote(client, message):
 
         if user_id is None:
             return await message.reply_text(
-                "Failed to extract user from the message."
+                "نەمتوانی بەکارهێنەرەکە بدۆزمەوە."
             )
 
         check_user = await check_banned_user(fed_id, user_id)
@@ -589,7 +589,7 @@ async def fpromote(client, message):
             reason = check_user["reason"]
             date = check_user["date"]
             return await message.reply_text(
-                f"**User {user.mention} was Fed Banned.\nyou can unban the user and promote.\n\nReason: {reason}.\nDate: {date}.**"
+                f"**بەکارهێنەر {user.mention} پێشتر فێد-باند کراوە.\nدەتوانیت باندی لادەیت و دواتر پلەکەی بەرز بکەیتەوە.\n\nهۆکار: {reason}.\nبەروار: {date}.**"
             )
 
         getuser = await search_user_in_fed(fed_id, user_id)
@@ -598,26 +598,26 @@ async def fpromote(client, message):
 
         if user_id == get_owner:
             return await message.reply_text(
-                "You do know that the user is the federation owner, right? RIGHT?"
+                "ئایا دەزانیت ئەم کەسە خاوەنی فیدراسیۆنەکەیە؟"
             )
 
         if getuser:
             return await message.reply_text(
-                "I cannot promote users who are already federation admins! Can remove them if you want!"
+                "ناتوانم پلەی کەسێک بەرز بکەمەوە کە خۆی ئەدمینی فیدراسیۆنە!"
             )
 
         if user_id == BOT_ID:
             return await message.reply_text(
-                "I already am a federation admin in all federations!"
+                "من خۆم لە هەموو فیدراسیۆنەکاندا ئەدمینم!"
             )
 
         res = await user_join_fed(str(fed_id), user_id)
         if res:
-            await message.reply_text("Successfully Promoted!")
+            await message.reply_text("بە سەرکەوتوویی پلەکەی بەرزکرایەوە!")
         else:
-            await message.reply_text("Failed to promote!")
+            await message.reply_text("شکستی هێنا لە بەرزکردنەوەی پلە!")
     else:
-        await message.reply_text("Only federation owners can do this!")
+        await message.reply_text("تەنها خاوەنی فیدراسیۆن دەتوانێت ئەم کارە بکات!")
 
 
 @app.on_message(filters.command("fdemote"))
@@ -629,13 +629,13 @@ async def fdemote(client, message):
 
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!",
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!",
         )
 
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text(
-            "You need to add a federation to this chat first!"
+            "دەبێت سەرەتا فیدراسیۆنێک بۆ ئەم گرووپە زیاد بکەیت!"
         )
 
     if await is_user_fed_owner(fed_id, user.id) or user.id in SUDOERS:
@@ -643,26 +643,26 @@ async def fdemote(client, message):
 
         if user_id is None:
             return await message.reply_text(
-                "Failed to extract user from the message."
+                "نەمتوانی بەکارهێنەرەکە بدۆزمەوە."
             )
 
         if user_id == BOT_ID:
             return await message.reply_text(
-                "The thing you are trying to demote me from will fail to work without me! Just saying."
+                "ئەگەر پلەی من دابەزێنیت، فیدراسیۆنەکە کار ناکات!"
             )
 
         if await search_user_in_fed(fed_id, user_id) is False:
             return await message.reply_text(
-                "I cannot demote people who are not federation admins!"
+                "ناتوانم پلەی کەسێک دابەزێنم کە ئەدمینی فیدراسیۆن نییە!"
             )
 
         res = await user_demote_fed(fed_id, user_id)
         if res is True:
-            await message.reply_text("Demoted from a Fed Admin!")
+            await message.reply_text("پلەکەی دابەزێنرا و چیتر ئەدمینی فیدراسیۆن نییە!")
         else:
-            await message.reply_text("Demotion failed!")
+            await message.reply_text("شکستی هێنا لە دابەزاندنی پلە!")
     else:
-        return await message.reply_text("Only federation owners can do this!")
+        return await message.reply_text("تەنها خاوەنی فیدراسیۆن دەتوانێت ئەم کارە بکات!")
 
 
 @app.on_message(filters.command(["fban", "sfban"]))
@@ -672,13 +672,13 @@ async def fban_user(client, message):
     from_user = message.from_user
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!."
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!."
         )
 
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text(
-            "**This chat is not a part of any federation."
+            "**ئەم گرووپە بەشێک نییە لە هیچ فیدراسیۆنێک."
         )
     info = await get_fed_info(fed_id)
     fed_owner = info["owner_id"]
@@ -688,35 +688,35 @@ async def fban_user(client, message):
         pass
     else:
         return await message.reply_text(
-            "You need to be a Fed Admin to use this command"
+            "دەبێت ئەدمینی فیدراسیۆن بیت بۆ بەکارهێنانی ئەم فەرمانە"
         )
     if len(message.command) < 2:
         return await message.reply_text(
-            "**You needed to specify a user or reply to their message!**"
+            "**پێویستە بەکارهێنەرێک دیاری بکەیت یان ڕیپلای نامەکەی بکەیت!**"
         )
     user_id, reason = await extract_user_and_reason(message)
     try:
         user = await app.get_users(user_id)
     except PeerIdInvalid:
-        return await message.reply_msg("Sorry, I've never met this user.")
+        return await message.reply_msg("ببوورە، من هەرگیز ئەم بەکارهێنەرەم نەبینیوە.")
     if not user_id:
-        return await message.reply_text("I can't find that user.")
+        return await message.reply_text("ناتوانم ئەو بەکارهێنەرە بدۆزمەوە.")
     if user_id in all_admins or user_id in SUDOERS:
-        return await message.reply_text("I can't ban that user.")
+        return await message.reply_text("ناتوانم ئەو بەکارهێنەرە باند بکەم (ئەدمینە).")
     check_user = await check_banned_user(fed_id, user_id)
     if check_user:
         reason = check_user["reason"]
         date = check_user["date"]
         return await message.reply_text(
-            f"**User {user.mention} was already Fed Banned.\n\nReason: {reason}.\nDate: {date}.**"
+            f"**بەکارهێنەر {user.mention} پێشتر فێد-باند کراوە.\n\nهۆکار: {reason}.\nبەروار: {date}.**"
         )
     if not reason:
-        return await message.reply("No reason provided.")
+        return await message.reply("تکایە هۆکارێک بنووسە.")
 
     served_chats, _ = await chat_id_and_names_in_fed(fed_id)
     m = await message.reply_text(
-        f"**Fed Banning {user.mention}!**"
-        + f" **This Action Should Take About {len(served_chats)} Seconds.**"
+        f"**خەریکی فێد-باندکردنی {user.mention} م!**"
+        + f" **ئەم کارە نزیکەی {len(served_chats)} چرکە دەخایەنێت.**"
     )
     await add_fban_user(fed_id, user_id, reason)
     number_of_chats = 0
@@ -728,7 +728,7 @@ async def fban_user(client, message):
                 if served_chat != chat.id:
                     if not message.text.startswith("/s"):
                         await app.send_message(
-                            served_chat, f"**Fed Banned {user.mention} !**"
+                            served_chat, f"**بەکارهێنەر {user.mention} لە فیدراسیۆن باند کرا!**"
                         )
                 number_of_chats += 1
             await asyncio.sleep(1)
@@ -739,20 +739,20 @@ async def fban_user(client, message):
     try:
         await app.send_message(
             user.id,
-            f"Hello, You have been fed banned by {from_user.mention},"
-            + " You can appeal for this ban by talking to him.",
+            f"سڵاو، تۆ لە لایەن {from_user.mention} لە فیدراسیۆن باند کرایت،"
+            + " دەتوانیت قسەی لەگەڵ بکەیت بۆ لادانی باندەکەت.",
         )
     except Exception:
         pass
-    await m.edit(f"Fed Banned {user.mention} !")
+    await m.edit(f"بەکارهێنەر {user.mention} فێد-باند کرا! 🚫")
     ban_text = f"""
-__**New Federation Ban**__
-**Origin:** {message.chat.title} [`{message.chat.id}`]
-**Admin:** {from_user.mention}
-**Banned User:** {user.mention}
-**Banned User ID:** `{user_id}`
-**Reason:** __{reason}__
-**Chats:** `{number_of_chats}`"""
+__**فێد-باندێکی نوێ**__
+**سەرچاوە:** {message.chat.title} [`{message.chat.id}`]
+**ئەدمین:** {from_user.mention}
+**باندکراو:** {user.mention}
+**ئایدی باندکراو:** `{user_id}`
+**هۆکار:** __{reason}__
+**گرووپەکان:** `{number_of_chats}`"""
     try:
         m2 = await app.send_message(
             info["log_group_id"],
@@ -760,12 +760,12 @@ __**New Federation Ban**__
             disable_web_page_preview=True,
         )
         await m.edit(
-            f"Fed Banned {user.mention} !\nAction Log: {m2.link}",
+            f"بەکارهێنەر {user.mention} فێد-باند کرا! 🚫\nلۆگی کارەکە: {m2.link}",
             disable_web_page_preview=True,
         )
     except Exception:
         await message.reply_text(
-            "User Fbanned, But This Fban Action Wasn't Logged, Add Me In LOG_GROUP"
+            "بەکارهێنەر باند کرا، بەڵام لۆگ نەکرا. تکایە من لە LOG_GROUP زیاد بکە."
         )
 
 
@@ -776,13 +776,13 @@ async def funban_user(client, message):
     from_user = message.from_user
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!."
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!."
         )
 
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text(
-            "**This chat is not a part of any federation."
+            "**ئەم گرووپە بەشێک نییە لە هیچ فیدراسیۆنێک."
         )
     info = await get_fed_info(fed_id)
     fed_owner = info["owner_id"]
@@ -792,32 +792,32 @@ async def funban_user(client, message):
         pass
     else:
         return await message.reply_text(
-            "You need to be a Fed Admin to use this command"
+            "دەبێت ئەدمینی فیدراسیۆن بیت بۆ بەکارهێنانی ئەم فەرمانە"
         )
     if len(message.command) < 2:
         return await message.reply_text(
-            "**You needed to specify a user or reply to their message!**"
+            "**پێویستە بەکارهێنەرێک دیاری بکەیت یان ڕیپلای نامەکەی بکەیت!**"
         )
     user_id, reason = await extract_user_and_reason(message)
     user = await app.get_users(user_id)
     if not user_id:
-        return await message.reply_text("I can't find that user.")
+        return await message.reply_text("ناتوانم ئەو بەکارهێنەرە بدۆزمەوە.")
     if user_id in all_admins or user_id in SUDOERS:
         return await message.reply_text(
-            "**How can an admin ever be banned!.**"
+            "**چۆن ئەدمینێک باند کراوە؟! گەمژانەیە.**"
         )
     check_user = await check_banned_user(fed_id, user_id)
     if not check_user:
         return await message.reply_text(
-            "**I can't unban a user who was never fedbanned.**"
+            "**ناتوانم باندی کەسێک لادەم کە هەرگیز فێد-باند نەکراوە.**"
         )
     if not reason:
-        return await message.reply("No reason provided.")
+        return await message.reply("تکایە هۆکارێک بنووسە.")
 
     served_chats, _ = await chat_id_and_names_in_fed(fed_id)
     m = await message.reply_text(
-        f"**Fed UnBanning {user.mention}!**"
-        + f" **This Action Should Take About {len(served_chats)} Seconds.**"
+        f"**خەریکی لابردنی باندی فیدراسیۆنی {user.mention} م!**"
+        + f" **ئەم کارە نزیکەی {len(served_chats)} چرکە دەخایەنێت.**"
     )
     await remove_fban_user(fed_id, user_id)
     number_of_chats = 0
@@ -829,7 +829,7 @@ async def funban_user(client, message):
                 if served_chat != chat.id:
                     if not message.text.startswith("/s"):
                         await app.send_message(
-                            served_chat, f"**Fed UnBanned {user.mention} !**"
+                            served_chat, f"**باندی فیدراسیۆنی {user.mention} لادرا! ✅**"
                         )
                 number_of_chats += 1
             await asyncio.sleep(1)
@@ -840,20 +840,20 @@ async def funban_user(client, message):
     try:
         await app.send_message(
             user.id,
-            f"Hello, You have been fed unbanned by {from_user.mention},"
-            + " You can thank him for his action.",
+            f"سڵاو، باندی فیدراسیۆنەکەت لادرا لە لایەن {from_user.mention},"
+            + " دەتوانیت سوپاسی بکەیت.",
         )
     except Exception:
         pass
-    await m.edit(f"Fed UnBanned {user.mention} !")
+    await m.edit(f"باندی فیدراسیۆنی {user.mention} لادرا! ✅")
     ban_text = f"""
-__**New Federation UnBan**__
-**Origin:** {message.chat.title} [`{message.chat.id}`]
-**Admin:** {from_user.mention}
-**UnBanned User:** {user.mention}
-**UnBanned User ID:** `{user_id}`
-**Reason:** __{reason}__
-**Chats:** `{number_of_chats}`"""
+__**لابردنی فێد-باند**__
+**سەرچاوە:** {message.chat.title} [`{message.chat.id}`]
+**ئەدمین:** {from_user.mention}
+**ئەندامی ئازادکراو:** {user.mention}
+**ئایدی ئەندام:** `{user_id}`
+**هۆکار:** __{reason}__
+**گرووپەکان:** `{number_of_chats}`"""
     try:
         m2 = await app.send_message(
             info["log_group_id"],
@@ -861,12 +861,12 @@ __**New Federation UnBan**__
             disable_web_page_preview=True,
         )
         await m.edit(
-            f"Fed UnBanned {user.mention} !\nAction Log: {m2.link}",
+            f"باندی {user.mention} لادرا! ✅\nلۆگی کارەکە: {m2.link}",
             disable_web_page_preview=True,
         )
     except Exception:
         await message.reply_text(
-            "User FUnbanned, But This Fban Action Wasn't Logged, Add Me In LOG_GROUP"
+            "باندی لادرا، بەڵام لۆگ نەکرا."
         )
 
 
@@ -876,15 +876,15 @@ async def status(message, user_id):
     if status:
         response_text = "\n\n".join(
             [
-                f"{i + 1}) **Fed Name:** {fed['fed_name']}\n  **Fed Id:** `{fed['fed_id']}`"
+                f"{i + 1}) **ناوی فیدراسیۆن:** {fed['fed_name']}\n  **ئایدی فیدراسیۆن:** `{fed['fed_id']}`"
                 for i, fed in enumerate(status)
             ]
         )
         await message.reply_text(
-            f"**Here is the list of federations that {user.mention} were banned in:**\n\n{response_text}"
+            f"**ئەمە لیستی ئەو فیدراسیۆنانەیە کە {user.mention} تێیاندا باند کراوە:**\n\n{response_text}"
         )
     else:
-        return await message.reply_text(f"**{user.mention} is not banned in any federations.**")
+        return await message.reply_text(f"**بەکارهێنەر {user.mention} لە هیچ فیدراسیۆنێکدا باند نەکراوە.**")
 
 
 @app.on_message(filters.command("fedstat"))
@@ -893,7 +893,7 @@ async def fedstat(client, message):
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
         return await message.reply_text(
-            "Federation Ban status can only be checked by privately messaging me."
+            "پشکنینی باندی فیدراسیۆن تەنها لە ڕێگەی تایبەت (PV) دەبێت."
         )
 
     if len(message.command) < 2:
@@ -909,7 +909,7 @@ async def fedstat(client, message):
 
     info = await get_fed_info(fed_id)
     if not info:
-        await message.reply_text("Please enter a valid fed id")
+        await message.reply_text("تکایە ئایدییەکی ڕاستی فیدراسیۆن بنووسە")
     else:
         check_user = await check_banned_user(fed_id, user_id)
         if check_user:
@@ -917,11 +917,11 @@ async def fedstat(client, message):
             reason = check_user["reason"]
             date = check_user["date"]
             return await message.reply_text(
-                f"**User {user.mention} was Fed Banned for:\n\nReason: {reason}.\nDate: {date}.**"
+                f"**بەکارهێنەر {user.mention} لەم فیدراسیۆنەدا باند کراوە بەهۆی:\n\nهۆکار: {reason}.\nبەروار: {date}.**"
             )
         else:
             await message.reply_text(
-                f"**User {user.mention} is not Fed Banned in this federation.**"
+                f"**بەکارهێنەر {user.mention} لەم فیدراسیۆنەدا باند نەکراوە.**"
             )
 
 
@@ -933,13 +933,13 @@ async def fbroadcast_message(client, message):
     reply_message = message.reply_to_message
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text(
-            "This command is specific to groups, not our pm!."
+            "ئەم فەرمانە تایبەتە بە گرووپەکان، نەک تایبەت!."
         )
 
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text(
-            "**This chat is not a part of any federation."
+            "**ئەم گرووپە بەشێک نییە لە هیچ فیدراسیۆنێک."
         )
     info = await get_fed_info(fed_id)
     fed_owner = info["owner_id"]
@@ -949,18 +949,18 @@ async def fbroadcast_message(client, message):
         pass
     else:
         return await message.reply_text(
-            "You need to be a Fed Admin to use this command"
+            "دەبێت ئەدمینی فیدراسیۆن بیت بۆ بەکارهێنانی ئەم فەرمانە"
         )
     if not reply_message:
         return await message.reply_text(
-            "**You need to reply to a message to Broadcasted it.**"
+            "**پێویستە ڕیپلای نامەیەک بکەیت بۆ ئەوەی بڕۆدکاستی بکەیت.**"
         )
     sleep_time = 0.1
 
     sent = 0
     chats, _ = await chat_id_and_names_in_fed(fed_id)
     m = await message.reply_text(
-        f"Broadcast in progress, will take {len(chats) * sleep_time} seconds."
+        f"بڕۆدکاستەکە دەستی پێکرد، نزیکەی {len(chats) * sleep_time} چرکە دەخایەنێت."
     )
     to_copy = not reply_message.poll
     for i in chats:
@@ -975,7 +975,7 @@ async def fbroadcast_message(client, message):
             await asyncio.sleep(int(e.value))
         except Exception:
             pass
-    await m.edit(f"**Broadcasted Message In {sent} Chats.**")
+    await m.edit(f"**نامەکە بە سەرکەوتوویی نێردرا بۆ {sent} گرووپ.**")
 
 
 @app.on_callback_query(filters.regex("rmfed_(.*)"))
@@ -985,7 +985,7 @@ async def del_fed_button(client, cb):
     fed_id = query.split("_")[1]
 
     if fed_id == "cancel":
-        await cb.message.edit_text("Federation deletion cancelled")
+        await cb.message.edit_text("سڕینەوەی فیدراسیۆن هەڵوەشایەوە")
         return
 
     getfed = await get_fed_info(fed_id)
@@ -993,7 +993,7 @@ async def del_fed_button(client, cb):
         delete = fedsdb.delete_one({"fed_id": str(fed_id)})
         if delete:
             await cb.message.edit_text(
-                "You have removed your Federation! Now all the Groups that are connected with `{}` do not have a Federation.".format(
+                "تۆ فیدراسیۆنەکەت سڕییەوە! ئێستا هەموو ئەو گرووپانەی بە `{}` بەسترابوونەوە بێ فیدراسیۆن ماونەتەوە.".format(
                     getfed["fed_name"]
                 ),
                 parse_mode=ParseMode.MARKDOWN,
@@ -1007,7 +1007,7 @@ async def fedtransfer_button(client, cb):
     data = query.split("_")[1]
 
     if data == "cancel":
-        return await cb.message.edit_text("Federation transfer cancelled")
+        return await cb.message.edit_text("گواستنەوەی فیدراسیۆن هەڵوەشایەوە")
 
     data2 = data.split("|", 1)
     new_owner_id = int(data2[0])
@@ -1015,7 +1015,7 @@ async def fedtransfer_button(client, cb):
     transferred = await transfer_owner(fed_id, userid, new_owner_id)
     if transferred:
         await cb.message.edit_text(
-            "**Successfully transferred ownership to new owner.**"
+            "**خاوەندارێتی بە سەرکەوتوویی گواسترایەوە بۆ خاوەنە نوێیەکە.**"
         )
 
 
@@ -1025,38 +1025,36 @@ async def fed_owner_help(client, cb):
     userid = cb.message.chat.id
     data = query.split("_")[1]
     if data == "owner":
-        text = """**👑 Fed Owner Only:**
- • /newfed <fed_name>**:** Creates a Federation, One allowed per user
- • /renamefed <fed_id> <new_fed_name>**:** Renames the fed id to a new name
- • /delfed <fed_id>**:** Delete a Federation, and any information related to it. Will not cancel blocked users
- • /myfeds**:** To list the federations that you have created
- • /fedtransfer <new_owner> <fed_id>**:**To transfer fed ownership to another person
- • /fpromote <user>**:** Assigns the user as a federation admin. Enables all commands for the user under `Fed Admins`
- • /fdemote <user>**:** Drops the User from the admin Federation to a normal User
- • /setfedlog <fed_id>**:** Sets the group as a fed log report base for the federation
- • /unsetfedlog <fed_id>**:** Removed the group as a fed log report base for the federation
- • /fbroadcast **:** Broadcasts a messages to all groups that have joined your fed """
+        text = """**👑 تایبەت بە خاوەنی فیدراسیۆن:**
+ • /newfed <ناو>**:** دروستکردنی فیدراسیۆن (یەک دانە بۆ هەر کەسێک)
+ • /renamefed <ئایدی> <ناوی_نوێ>**:** گۆڕینی ناوی فیدراسیۆن
+ • /delfed <ئایدی>**:** سڕینەوەی فیدراسیۆن و هەموو زانیارییەکانی
+ • /myfeds**:** لیستی ئەو فیدراسیۆنانەی تۆ دروستت کردوون
+ • /fedtransfer <خاوەنی_نوێ> <ئایدی>**:** گواستنەوەی خاوەندارێتی
+ • /fpromote <یوزەر>**:** دیاریکردنی کەسێک وەک ئەدمینی فیدراسیۆن
+ • /fdemote <یوزەر>**:** لابردنی کەسێک لە ئەدمینی فیدراسیۆن
+ • /setfedlog <ئایدی>**:** دیاریکردنی گرووپێک وەک لۆگی فیدراسیۆن
+ • /unsetfedlog <ئایدی>**:** لابردنی گرووپی لۆگ
+ • /fbroadcast **:** ناردنی نامە بۆ هەموو گرووپە بەستراوەکان """
     elif data == "admin":
-        text = """**🔱 Fed Admins:**
- • /fban <user> <reason>**:** Fed bans a user
- • /sfban**:** Fban a user without sending notification to chats
- • /unfban <user> <reason>**:** Removes a user from a fed ban
- • /sunfban**:** Unfban a user without sending a notification
- • /fedadmins**:** Show Federation admin
- • /fedchats <Fed_ID>**:** Get all the chats that are connected in the Federation
- • /fbroadcast **:** Broadcasts a messages to all groups that have joined your fed
+        text = """**🔱 ئەدمینەکانی فیدراسیۆن:**
+ • /fban <یوزەر> <هۆکار>**:** باندکردنی کەسێک لە فیدراسیۆن
+ • /sfban**:** باندکردن بە بێ ناردنی نامە بۆ گرووپەکان
+ • /unfban <یوزەر> <هۆکار>**:** لابردنی باندی فیدراسیۆن
+ • /sunfban**:** لابردنی باند بە بێ ناردنی نامە
+ • /fedadmins**:** پیشاندانی ئەدمینەکانی فیدراسیۆن
+ • /fedchats <ئایدی>**:** پیشاندانی هەموو گرووپە بەستراوەکان
+ • /fbroadcast **:** ناردنی نامە بۆ هەموو گرووپە بەستراوەکان
  """
     else:
-        text = """**User Commands:**
-• /fedinfo <Fed_ID>: Information about a federation.
-• /fedadmins <Fed_ID>: List the admins in a federation.
-• /joinfed <Fed_ID>: Join the current chat to a federation. A chat can only join one federation. Chat owners only.
-• /leavefed: Leave the current federation. Only chat owners can do this.
-• /fedstat: List all the federations that you have been banned in.
-• /fedstat <user_ID>: List all the federations that a user has been banned in.
-• /fedstat <Fed_ID>: Gives information about your ban in a federation.
-• /fedstat <user_ID> <FedID>: Gives information about a user's ban in a federation.
-• /chatfed: Information about the federation the current chat is in.
+        text = """**فەرمانەکانی بەکارهێنەر:**
+• /fedinfo <ئایدی>: زانیاری دەربارەی فیدراسیۆنێک.
+• /fedadmins <ئایدی>: لیستی ئەدمینەکانی فیدراسیۆن.
+• /joinfed <ئایدی>: بەستنەوەی گرووپەکەت بە فیدراسیۆنێک (تەنها خاوەن گرووپ).
+• /leavefed: جیابوونەوە لە فیدراسیۆن (تەنها خاوەن گرووپ).
+• /fedstat: لیستی هەموو ئەو فیدراسیۆنانەی تۆیان تێدا باند کراوە.
+• /fedstat <ئایدی_یوزەر>: لیستی ئەو فیدراسیۆنانەی یوزەرێکی تێدا باند کراوە.
+• /chatfed: زانیاری دەربارەی ئەو فیدراسیۆنەی کە گرووپەکەی تێدایە.
 """
     await cb.message.edit(
         html.escape(text),
@@ -1064,7 +1062,7 @@ async def fed_owner_help(client, cb):
             [
                 [
                     InlineKeyboardButton(
-                        "Back", callback_data="help_module(federation)"
+                        "گەڕانەوە", callback_data="help_module(federation)"
                     ),
                 ]
             ]
