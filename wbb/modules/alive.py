@@ -27,6 +27,7 @@ from pyrogram import filters
 from wbb import BOT_ID, SUDOERS, USERBOT_PREFIX, app2
 
 
+# ئەم بەشە تەنها بۆ ئەدمینە باڵاکان (Sudoers) کار دەکات
 @app2.on_message(
     filters.command("alive", prefixes=USERBOT_PREFIX)
     & ~filters.forwarded
@@ -34,8 +35,11 @@ from wbb import BOT_ID, SUDOERS, USERBOT_PREFIX, app2
     & SUDOERS
 )
 async def alive_command_func(_, message):
+    # سڕینەوەی نامەکەی تۆ
     await message.delete()
+    # وەرگرتنی ئەنجامەکان لە بۆتە سەرەکییەکەوە بە شێوازی ئینلاین
     results = await app2.get_inline_bot_results(BOT_ID, "alive")
+    # ناردنی ئەنجامەکە بۆ ناو گرووپەکە
     await app2.send_inline_bot_result(
         message.chat.id, results.query_id, results.results[0].id
     )
