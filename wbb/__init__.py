@@ -2,27 +2,10 @@
 MIT License
 
 Copyright (c) 2024 TheHamkerCat
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 """
 import asyncio
 import time
+import os
 from inspect import getfullargspec
 from os import path
 from pathlib import Path
@@ -104,47 +87,59 @@ async def load_sudoers():
 loop = asyncio.get_event_loop()
 loop.run_until_complete(load_sudoers())
 
-if not SESSION_STRING:
+# فێڵێکی زیرەک بۆ خوێندنەوەی کلیلەکە بە هەر ناوێک بێت
+SESSION = os.environ.get("SESSION_STRING") or os.environ.get("STRING_SESSION") or (SESSION_STRING if 'SESSION_STRING' in locals() else None)
+
+if not SESSION or SESSION.strip() == "":
+    log.info("SESSION_STRING missing, userbot client will be skipped.")
+    app2 = None
+else:
     app2 = Client(
         name="sessions/userbot",
         api_id=API_ID,
         api_hash=API_HASH,
-        phone_number=PHONE_NUMBER,
-    )
-else:
-    app2 = Client(
-        name="sessions/userbot", api_id=API_ID, api_hash=API_HASH, session_string=SESSION_STRING
+        session_string=SESSION,
+        in_memory=True,
     )
 
 aiohttpsession = ClientSession()
-
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
-
 app = Client("sessions/wbb", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH)
 
 log.info("Starting bot client")
 app.start()
-log.info("Starting userbot client")
-app2.start()
 
-log.info("Gathering profile info")
+# پێناسەکردنی نرخەکان بۆ ئەوەی ئەگەر ئاسیستانت نەبوو، بۆتەکە کراش نەکات
+USERBOT_ID = 0
+USERBOT_NAME = "None"
+USERBOT_USERNAME = "None"
+USERBOT_MENTION = "None"
+USERBOT_DC_ID = 0
+
+if app2:
+    try:
+        log.info("Starting userbot client")
+        app2.start()
+        log.info("Gathering profile info for assistant")
+        y = app2.get_me()
+        USERBOT_ID = y.id
+        USERBOT_NAME = y.first_name + (y.last_name or "")
+        USERBOT_USERNAME = y.username
+        USERBOT_MENTION = y.mention
+        USERBOT_DC_ID = y.dc_id
+        if USERBOT_ID not in SUDOERS:
+            SUDOERS.add(USERBOT_ID)
+    except Exception as e:
+        log.error(f"Userbot failed to start: {e}. Bot will run without assistant.")
+        app2 = None
+
+log.info("Gathering profile info for bot")
 x = app.get_me()
-y = app2.get_me()
-
 BOT_ID = x.id
 BOT_NAME = x.first_name + (x.last_name or "")
 BOT_USERNAME = x.username
 BOT_MENTION = x.mention
 BOT_DC_ID = x.dc_id
-
-USERBOT_ID = y.id
-USERBOT_NAME = y.first_name + (y.last_name or "")
-USERBOT_USERNAME = y.username
-USERBOT_MENTION = y.mention
-USERBOT_DC_ID = y.dc_id
-
-if USERBOT_ID not in SUDOERS:
-    SUDOERS.add(USERBOT_ID)
 
 log.info("Initializing Telegraph client")
 telegraph = Telegraph(domain="graph.org")
