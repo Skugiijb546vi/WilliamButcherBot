@@ -9,16 +9,16 @@ from wbb.utils.filter_groups import autocorrect_group
 @app.on_message(filters.command("autocorrect"))
 async def autocorrect_bot(_, message: Message):
     if not message.reply_to_message:
-        return await message.reply_text("Reply to a text message.")
+        return await message.reply_text("تکایە ڕیپلای نامەیەکی نووسین (تێکست) بکە.")
     reply = message.reply_to_message
     text = reply.text or reply.caption
     if not text:
-        return await message.reply_text("Reply to a text message.")
+        return await message.reply_text("تکایە ڕیپلای نامەیەکی نووسین (تێکست) بکە.")
     data = await arq.spellcheck(text)
     if not data.ok:
-        return await message.reply_text("Something wrong happened.")
+        return await message.reply_text("هەڵەیەک ڕوویدا لە کاتی ڕاستکردنەوەدا.")
     result = data.result
-    await message.reply_text(result.corrected if result.corrected else "Empty")
+    await message.reply_text(result.corrected if result.corrected else "بەتاڵ")
 
 
 IS_ENABLED = False
@@ -33,17 +33,17 @@ IS_ENABLED = False
 async def autocorrect_ubot_toggle(_, message: Message):
     global IS_ENABLED
     if len(message.command) != 2:
-        return await eor(message, text="Not enough arguments.")
+        return await eor(message, text="زانیاری تەواو نەدراوە. شێواز: autocorrect [enable|disable]")
     state = message.text.split(None, 1)[1].strip().lower()
     if state == "enable":
         IS_ENABLED = True
-        await eor(message, text="Enabled!")
+        await eor(message, text="ڕاستکردنەوەی خۆکارانە چالاک کرا! ✅")
     elif state == "disable":
         IS_ENABLED = False
-        await eor(message, text="Disabled!")
+        await eor(message, text="ڕاستکردنەوەی خۆکارانە ناچالاک کرا! ❌")
     else:
         return await eor(
-            message, text="Wrong argument, Pass (ENABLE|DISABLE)."
+            message, text="فەرمانەکە هەڵەیە، تەنها (enable یان disable) بنووسە."
         )
 
 
