@@ -34,18 +34,18 @@ from wbb.utils.functions import make_carbon
 async def carbon_func(_, message):
     if not message.reply_to_message:
         return await message.reply_text(
-            "Reply to a text message to make carbon."
+            "ڕیپلای نامەیەکی نووسین (تێکست) بکە بۆ دروستکردنی وێنەی کاربۆن."
         )
     if not message.reply_to_message.text:
         return await message.reply_text(
-            "Reply to a text message to make carbon."
+            "ڕیپلای نامەیەکی نووسین (تێکست) بکە بۆ دروستکردنی وێنەی کاربۆن."
         )
-    status = await message.reply_text("Preparing Carbon…")
+    status = await message.reply_text("خەریکی ئامادەکردنی وێنەکەیم…")
     try:
         carbon = await make_carbon(message.reply_to_message.text)
-        await status.edit("Uploading…")
+        await status.edit("خەریکی ناردنم…")
         await app.send_document(message.chat.id, carbon)
     except Exception as e:
-        await status.edit(f"❌ Failed: {e}")
+        await status.edit(f"❌ شکستی هێنا: {e}")
     else:
         await status.delete()
