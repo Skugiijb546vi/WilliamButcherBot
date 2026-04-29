@@ -10,10 +10,13 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY . .
 
-# *** نه‌شته‌رگه‌ری لێره‌دایه‌: گۆڕینی مەرجی ڤێرژن لەناو فایلەکەدا ***
+# 1. گۆڕینی ڤێرژنی پایتۆن لەناو فایلەکاندا
 RUN sed -i 's/requires-python = ">=3.12"/requires-python = ">=3.10"/' pyproject.toml
 
-# sync with python 3.10
+# 2. فێڵە گەورەکە: ناچارکردنی کۆدەکە بۆ دروستکردنی Event Loop لە سەرەتای کارکردندا
+RUN sed -i '1s/^/import asyncio; asyncio.set_event_loop(asyncio.new_event_loop())\n/' wbb/__init__.py
+
+# 3. دابەزاندنی کتێبخانەکان
 RUN uv sync --no-dev --python 3.10
 
 ENV PATH="/app/.venv/bin:$PATH"
