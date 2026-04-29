@@ -1,5 +1,6 @@
 # ============= BASE STAGE =============
-FROM python:3.12-slim-bullseye AS base
+# لێرەدا پایتۆنمان گۆڕی بۆ 3.9 بۆ ئەوەی ئێرۆری Event Loop نەمێنێت
+FROM python:3.9-slim-bullseye AS base
 
 WORKDIR /wbb
 
@@ -19,7 +20,7 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 ENV PATH="/root/.local/bin/:$PATH"
 
-COPY .python-version .
+# ئەمانە وەک خۆی دەمێننەوە
 COPY pyproject.toml .
 COPY uv.lock .
 
